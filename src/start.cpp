@@ -57,5 +57,5 @@ void gdt_hook_hidden() {
 }
 
 void gdt_hook_render() {
-
+	game->render();
 }

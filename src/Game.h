@@ -2,6 +2,7 @@
  * Game.h
  *
  * Copyright (c) 2011 Sebastian Ärleryd
+ * CopyRight (c) 2012 Carl Andersson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,10 +27,12 @@
 #define Game_h
 
 #include "gdt.h"
+#include "Screen.h"
 
 class Game {
 private:
 	static char *TAG;
+	Screen mScreen;
 
 public:
 	Game();
@@ -37,6 +40,8 @@ public:
 	//gdt events
 	void init();
 	void visible(bool newSurface, int width, int height);
+
+	void render();
 };
 
 #endif //Game_h

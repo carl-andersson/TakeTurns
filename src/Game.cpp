@@ -23,6 +23,9 @@
  */
 
 #include "Game.h"
+#include "gdt_gles2.h"
+#include "Screen.h"
+#include "sshader.h"
 
 char *Game::TAG = "Game";
 
@@ -32,9 +35,19 @@ Game::Game() {
 
 void Game::init() {
 	gdt_log(LOG_NORMAL, TAG, "Game initialized.");
+	sshaderInit();
 }
 
 void Game::visible(bool newSurface, int width, int height) {
 	gdt_log(LOG_NORMAL, TAG, "Visible with screen size (%d, %d).", width, height);
+	if (newSurface){
+		glClearColor(0.4, 0.8, 0.4, 1);
+	}
+	mScreen = Screen(width,height);
+	glViewport(0, 0, width,height);
+}
+
+void Game::render(){
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 
