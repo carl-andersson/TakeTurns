@@ -1,4 +1,27 @@
-
+/*
+ * sshader.h
+ *
+ * Copyright (c) 2011 Rickard Edström
+ * CopyRight (c) 2012 Carl Andersson
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 
 #include <unistd.h>
 #include <string.h>
@@ -10,22 +33,24 @@ string_t TAG="StandardShader";
 GLuint SHADER_VERTEX_COLOR;
 GLuint SHADER_VERTEX_TRANSLATION;
 GLuint SHADER_VERTEX_POSITION;
+GLuint SHADER_VERTEX_SCALE;
 
 GLuint PROGRAM_ID;
 
 string_t vertexShaderCode = "\
-attribute vec4 translation;  \
-attribute vec4 position;\
-attribute vec4 color;\
-varying vec4 color;	\
+attribute mediump vec4 translation;  \
+attribute mediump vec4 position;\
+attribute mediump vec4 scale;\
+attribute mediump vec4 vert_color;\
+varying mediump vec4 color;	\
 void main(void) { \
-    gl_Position = position+ vec4(translation.x, translation.y, 0, 0);\
-	gl_Color=color;\
+    gl_Position = position*scale+ vec4(translation.x, translation.y, 0, 0);\
+	color=vert_color;\
 }\
 ";
 
 string_t fragmentShaderCode = "         \
-varying vec4 color;	\
+varying mediump vec4 color;	\
 void main(void) {                      \
     gl_FragColor = vec4(color);   \
 }                                      \
@@ -33,14 +58,17 @@ void main(void) {                      \
 
 void sshaderInit(){
 	PROGRAM_ID=linkProgram();
-    SHADER_VERTEX_COLOR = glGetAttribLocation(PROGRAM_ID, "color");
+    SHADER_VERTEX_COLOR = glGetAttribLocation(PROGRAM_ID, "vert_color");
     SHADER_VERTEX_POSITION = glGetAttribLocation(PROGRAM_ID, "position");
+    SHADER_VERTEX_SCALE = glGetAttribLocation(PROGRAM_ID, "scale");
     SHADER_VERTEX_TRANSLATION=glGetAttribLocation(PROGRAM_ID, "translation");
-    gdt_log(LOG_NORMAL, TAG, "Shader created");
+    gdt_log(LOG_NORMAL, TAG, "Shader created. Id:%i \nPointers: %i %i %i %i",PROGRAM_ID,SHADER_VERTEX_COLOR,SHADER_VERTEX_POSITION,SHADER_VERTEX_TRANSLATION,SHADER_VERTEX_SCALE);
     glUseProgram(PROGRAM_ID);
 }
 
-
+GLuint getShaderId(){
+	return PROGRAM_ID;
+}
 
 GLuint linkProgram() {
     GLuint vertexShader = compileShader(vertexShaderCode, GL_VERTEX_SHADER);
@@ -70,18 +98,33 @@ GLuint compileShader(string_t shaderCode, GLenum type) {
 
     glCompileShader(shader);
 
+
     GLint result;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
+
     if (result == GL_FALSE) {
-        gdt_fatal(TAG, "Error compiling shader");
+    	char* log=new char[1000];
+    	int length;
+    	glGetShaderInfoLog(shader,1000,&length,log);
+        gdt_fatal(TAG, "Error compiling shader: %s",log);
     }
     return shader;
 }
 
-void setColor3f(float x, float y,float z){
-	glUniform4f(SHADER_VERTEX_COLOR, x, y,z,1.0f);
+void setColor3f(float r, float g,float b){
+	glVertexAttrib4f(SHADER_VERTEX_COLOR, r, g,b,1.0f);
+}
+
+void setColor4f(float r, float g,float b,float a){
+	glVertexAttrib4f(SHADER_VERTEX_COLOR, r, g,b,a);
 }
 
 void translate2f(float x, float y){
-	glUniform4f(SHADER_VERTEX_TRANSLATION, x, y,0.0f,0.0f);
+	glVertexAttrib4f(SHADER_VERTEX_TRANSLATION, x, y,0.0f,0.0f);
 }
+
+void setScale2f(float sx ,float sy){
+	glVertexAttrib2f(SHADER_VERTEX_SCALE, sx, sy);
+}
+
+

@@ -1,5 +1,5 @@
 /*
- * Widget.h
+ * Sprite.cpp
  *
  * CopyRight (c) 2012 Carl Andersson
  *
@@ -22,51 +22,40 @@
  * THE SOFTWARE.
  */
 
-#ifndef WIDGET_H
-#define WIDGET_H
-
-#include <vector>
-#include <string.h>
+#include "Sprite.h"
+#include "gdt_gles2.h"
+#include "sshader.h"
 #include "gdt.h"
 
-class Widget{
 
-private:
-	std::vector<Widget*> children;
-
-	static const string_t TAG;
-public:
-	float mX;
-	float mY;
-
-	float green;
-	float red;
-	float blue;
-	float alpha;
-
-	float scaleX;
-	float scaleY;
-
-	Widget(){
-		children=std::vector<Widget*>();
-		mX=0;
-		mY=0;
-		scaleX=1;
-		scaleY=1;
-		green=1;
-		blue=1;
-		red=1;
-		alpha=1;
-	}
-
-	void draw();
-	virtual void selfDraw(){gdt_log(LOG_NORMAL, TAG, "selfDraw");};
+const GLfloat Sprite::v[] = { -0.5,0.5,
+		-0.5, -0.5,
+		0.5, 0.5,
+		0.5, -0.5    };
+const GLubyte Sprite::i[] = { 0, 1, 2, 3 };
 
 
-
-};
-
+const string_t Sprite::TAG="Sprite";
 
 
+void Sprite::init(GLuint program){
+	GLuint positionAttrib = glGetAttribLocation(program, "position");
+	GLuint vertexBuf;
+	glGenBuffers(1, &vertexBuf);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuf);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
 
-#endif //WIDGET_H
+	static const GLubyte i[] = { 0, 1, 2, 3 };
+	GLuint indexBuf;
+	glGenBuffers(1, &indexBuf);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuf);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(i), i, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(positionAttrib);
+	glVertexAttribPointer(positionAttrib, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), 0);
+}
+
+void Sprite::selfDraw(){
+	//gdt_log(LOG_NORMAL, TAG, "selfDraw");
+	glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, NULL);
+}

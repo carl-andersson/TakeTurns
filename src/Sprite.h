@@ -1,5 +1,5 @@
 /*
- * Widget.h
+ * Sprite.h
  *
  * CopyRight (c) 2012 Carl Andersson
  *
@@ -22,51 +22,27 @@
  * THE SOFTWARE.
  */
 
-#ifndef WIDGET_H
-#define WIDGET_H
+#ifndef SPRITE_H
+#define SPRITE_H
 
-#include <vector>
+#include "gdt_gles2.h"
+#include "Widget.h"
 #include <string.h>
 #include "gdt.h"
 
-class Widget{
-
+class Sprite:public Widget{
 private:
-	std::vector<Widget*> children;
+	static const GLfloat v[];
+	static const GLubyte i[];
 
 	static const string_t TAG;
+
 public:
-	float mX;
-	float mY;
+	static void init(GLuint);
 
-	float green;
-	float red;
-	float blue;
-	float alpha;
-
-	float scaleX;
-	float scaleY;
-
-	Widget(){
-		children=std::vector<Widget*>();
-		mX=0;
-		mY=0;
-		scaleX=1;
-		scaleY=1;
-		green=1;
-		blue=1;
-		red=1;
-		alpha=1;
-	}
-
-	void draw();
-	virtual void selfDraw(){gdt_log(LOG_NORMAL, TAG, "selfDraw");};
-
+	void selfDraw();
 
 
 };
 
-
-
-
-#endif //WIDGET_H
+#endif   //SPRITE_H
