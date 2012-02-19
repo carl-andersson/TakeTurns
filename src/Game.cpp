@@ -22,23 +22,60 @@
  * THE SOFTWARE.
  */
 
+#include <string.h>
+#include <gdt/gdt_gles2.h>
+
 #include "Game.h"
-#include "gdt_gles2.h"
 #include "Screen.h"
 #include "sshader.h"
 
-char *Game::TAG = "Game";
+const char *Game::TAG = "Game";
 
 Game::Game() {
 	gdt_log(LOG_NORMAL, TAG, "Game instance created.");
+
+	loadAndPrintResource();
+}
+
+void Game::loadAndPrintResource() {
+		string_t file = "/test.txt.jet";
+		resource_t res = gdt_resource_load(file);
+
+		gdt_log(LOG_NORMAL, TAG, "Resource is: %d", res);
+
+		int len = gdt_resource_length(res);
+
+		gdt_log(LOG_NORMAL, TAG, "Resource length is: %d", len);
+
+		void *bytes = gdt_resource_bytes(res);
+		char *text = (char *) malloc(len+1);
+		memset(text, 0, len+1);
+		memcpy(text, bytes, len);
+
+		gdt_log(LOG_NORMAL, TAG, "byte per byte:");
+		for(int i = 0; i < len; i++) {
+			gdt_log(LOG_NORMAL, TAG, "%c", text[i]);
+		}
+		gdt_log(LOG_NORMAL, TAG, "end");
+
+		gdt_log(LOG_NORMAL, TAG, "Read \"%s\" from file \"%s\"", text, file);
+
+		gdt_resource_unload(res);
+
+		len = gdt_resource_length(res);
+		gdt_log(LOG_NORMAL, TAG, "Resource length is: %d", len);
 }
 
 void Game::init() {
 	gdt_log(LOG_NORMAL, TAG, "Game initialized.");
-	sshaderInit();
 }
 
-void Game::visible(bool newSurface, int width, int height) {
+void Game::visible(bool newSurface) {
+	sshaderInit();
+
+	int width = gdt_surface_width();
+	int height = gdt_surface_height();
+
 	gdt_log(LOG_NORMAL, TAG, "Visible with screen size (%d, %d).", width, height);
 	if (newSurface){
 		glClearColor(0.4, 0.8, 0.4, 1);

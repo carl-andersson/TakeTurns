@@ -5,7 +5,7 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
-#include "gdt_gles2.h"
+#include <gdt/gdt_gles2.h>
 
 class Screen{
 private:

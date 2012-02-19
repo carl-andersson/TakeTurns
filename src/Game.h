@@ -26,20 +26,23 @@
 #ifndef Game_h
 #define Game_h
 
-#include "gdt.h"
+#include <gdt/gdt.h>
+
 #include "Screen.h"
 
 class Game {
 private:
-	static char *TAG;
+	static const char *TAG;
 	Screen mScreen;
+
+	void loadAndPrintResource();
 
 public:
 	Game();
 
 	//gdt events
 	void init();
-	void visible(bool newSurface, int width, int height);
+	void visible(bool newSurface);
 
 	void render();
 };

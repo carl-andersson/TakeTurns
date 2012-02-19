@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-#include "gdt.h"
+#include <gdt/gdt.h>
 
 #include "Game.h"
 
@@ -36,8 +36,8 @@ void gdt_hook_initialize() {
 	game->init();
 }
 
-void gdt_hook_visible(bool newSurface, int width, int height) {
-	game->visible(newSurface, width, height);
+void gdt_hook_visible(bool newSurface) {
+	game->visible(newSurface);
 }
 
 void gdt_hook_active() {

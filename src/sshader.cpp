@@ -2,7 +2,7 @@
 
 #include <unistd.h>
 #include <string.h>
-#include "gdt_gles2.h"
+
 #include "sshader.h"
 
 string_t TAG="StandardShader";
@@ -14,18 +14,25 @@ GLuint SHADER_VERTEX_POSITION;
 GLuint PROGRAM_ID;
 
 string_t vertexShaderCode = "\
+precision highp float; \
+\
 attribute vec4 translation;  \
 attribute vec4 position;\
-attribute vec4 color;\
+attribute vec4 vertColor;	\
+\
 varying vec4 color;	\
+\
 void main(void) { \
+	color = vertColor; \
     gl_Position = position+ vec4(translation.x, translation.y, 0, 0);\
-	gl_Color=color;\
 }\
 ";
 
 string_t fragmentShaderCode = "         \
+precision highp float; \
+\
 varying vec4 color;	\
+\
 void main(void) {                      \
     gl_FragColor = vec4(color);   \
 }                                      \
@@ -56,7 +63,14 @@ GLuint linkProgram() {
     GLint result;
     glGetProgramiv(program, GL_LINK_STATUS, &result);
     if (result == GL_FALSE) {
-        gdt_fatal(TAG, "Error linking program");
+		//Get the length of the error log
+		GLint logLength;
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
+
+		//Get and print the error log and then exit with error
+		char *infoLog = (char *) malloc(logLength);
+		glGetProgramInfoLog(program, logLength, NULL, infoLog);
+		gdt_fatal(TAG, "Error linking program: %s", infoLog);
     }
 
     return program;
@@ -73,7 +87,14 @@ GLuint compileShader(string_t shaderCode, GLenum type) {
     GLint result;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
     if (result == GL_FALSE) {
-        gdt_fatal(TAG, "Error compiling shader");
+    		//Get the length of the error log
+        GLint logLength;
+        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
+
+        //Get and print the error log and then exit with error
+        char *infoLog = (char *) malloc(logLength);
+        glGetShaderInfoLog(shader, logLength, NULL, infoLog);
+        gdt_fatal(TAG, "Error compiling shader: %s", infoLog);
     }
     return shader;
 }
