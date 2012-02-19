@@ -23,11 +23,11 @@
  * THE SOFTWARE.
  */
 
-#include "Sprite.h"
-#include "gdt_gles2.h"
-#include "sshader.h"
-#include "gdt.h"
+#include <gdt/gdt.h>
+#include <gdt/gdt_gles2.h>
 
+#include "Sprite.h"
+#include "sshader.h"
 
 const Vertex Sprite::vert[]={{-0.5,0.5,1,0},
 		 {-0.5, -0.5,1,1},

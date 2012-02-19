@@ -9,7 +9,7 @@
 #include <map>
 #include <string>
 #include <string.h>
-#include <gdt_gles2.h>
+#include <gdt/gdt_gles2.h>
 
 typedef struct{
 	std::string vertData;

@@ -1,7 +1,6 @@
-
+#include <gdt/gdt.h>
 
 #include "TextureManager.h"
-#include "gdt.h"
 #include "picopng.h"
 
 const string_t TextureManager::TAG="TextureManager";

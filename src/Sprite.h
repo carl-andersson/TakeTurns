@@ -25,10 +25,13 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
-#include "gdt_gles2.h"
-#include "Widget.h"
 #include <string.h>
-#include "gdt.h"
+
+#include <gdt/gdt_gles2.h>
+#include <gdt/gdt.h>
+
+#include "Widget.h"
+
 typedef struct {
 	float v[2];
 	float tc[2];

@@ -37,15 +37,12 @@ class Game {
 private:
 	static const char *TAG;
 	Screen mScreen;
-<<<<<<< HEAD
-
-	void loadAndPrintResource();
-
-=======
 	Sprite *sprites;
 	TextureManager mTM;
 	ShaderManager mSM;
->>>>>>> origin/master
+
+	void loadAndPrintResource();
+
 public:
 	Game();
 

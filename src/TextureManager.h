@@ -9,8 +9,8 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "gdt_gles2.h"
 #include <string.h>
+#include <gdt/gdt_gles2.h>
 
 typedef struct{
 	std::vector<unsigned char> data;

@@ -43,9 +43,4 @@ void setColor4f(float,float,float,float);
 
 void setScale2f(float,float);
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> origin/master
 #endif //SSHADER_H

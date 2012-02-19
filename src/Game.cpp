@@ -42,7 +42,7 @@ Game::Game() {
 
 	gdt_log(LOG_NORMAL, TAG, "Game instance created.");
 
-	loadAndPrintResource();
+
 }
 
 void Game::loadAndPrintResource() {
@@ -76,22 +76,24 @@ void Game::loadAndPrintResource() {
 
 void Game::init() {
 	gdt_log(LOG_NORMAL, TAG, "Game initialized.");
-<<<<<<< HEAD
 }
 
 void Game::visible(bool newSurface) {
+	gdt_log(LOG_NORMAL, TAG, "Game visible.");
+
+	loadAndPrintResource();
+
 	sshaderInit();
-=======
-	mTM.loadImagePNG("/pancake.png");
-	mSM.loadShaderProgram("/vert.jet","/frag.jet");
->>>>>>> origin/master
+
+	mTM.loadImagePNG("/face.png");
+	//mSM.loadShaderProgram("/vert.jet","/frag.jet");
 
 	int width = gdt_surface_width();
 	int height = gdt_surface_height();
 
 	gdt_log(LOG_NORMAL, TAG, "Visible with screen size (%d, %d).", width, height);
 	if (newSurface){
-		GLuint texture=mTM.linkTexture("/pancake.png");
+		GLuint texture=mTM.linkTexture("/face.png");
 		sprites=new Sprite(texture);
 		sprites->mScaleY=2;
 		sprites->mScaleX=2;
@@ -109,5 +111,3 @@ void Game::render(){
 	sprites->draw();
 
 }
-
-

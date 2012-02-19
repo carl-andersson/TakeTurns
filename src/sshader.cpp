@@ -40,19 +40,6 @@ GLuint SHADER_VERTEX_TEXTURE_COORDS;
 GLuint PROGRAM_ID;
 
 string_t vertexShaderCode = "\
-<<<<<<< HEAD
-precision highp float; \
-\
-attribute vec4 translation;  \
-attribute vec4 position;\
-attribute vec4 vertColor;	\
-\
-varying vec4 color;	\
-\
-void main(void) { \
-	color = vertColor; \
-    gl_Position = position+ vec4(translation.x, translation.y, 0, 0);\
-=======
 attribute highp vec4 translation;  \
 attribute highp vec4 position;\
 attribute highp vec4 vert_textureCoords;\
@@ -64,21 +51,13 @@ void main(void) { \
 	textureCoords=vert_textureCoords;\
     gl_Position = position*scale+ vec4(translation.x, translation.y, 0, 0);\
 	color=vert_color;\
->>>>>>> origin/master
 }\
 ";
 
 string_t fragmentShaderCode = "         \
-<<<<<<< HEAD
-precision highp float; \
-\
-varying vec4 color;	\
-\
-=======
 uniform sampler2D texture;	\
 varying highp vec4 color;	\
 varying highp vec4 textureCoords;	\
->>>>>>> origin/master
 void main(void) {                      \
     gl_FragColor = color*texture2D(texture,textureCoords.xy);   \
 }                                      \
