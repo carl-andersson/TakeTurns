@@ -2,6 +2,8 @@
  * Game.cpp
  *
  * Copyright (c) 2011 Sebastian Ärleryd
+ * CopyRight (c) 2012 Carl Andersson
+ *
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +30,7 @@
 #include "Game.h"
 #include "Screen.h"
 #include "sshader.h"
+#include "Sprite.h"
 
 const char *Game::TAG = "Game";
 
@@ -78,13 +81,23 @@ void Game::visible(bool newSurface) {
 
 	gdt_log(LOG_NORMAL, TAG, "Visible with screen size (%d, %d).", width, height);
 	if (newSurface){
+		sshaderInit();
+		Sprite::init(getShaderId());
 		glClearColor(0.4, 0.8, 0.4, 1);
 	}
+
+
 	mScreen = Screen(width,height);
 	glViewport(0, 0, width,height);
 }
 
 void Game::render(){
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	Sprite sp=Sprite();
+	sp.green=0.0;
+	sp.alpha=0.5;
+	sp.scaleY=mScreen.getRatio();
+	sp.draw();
 }
 

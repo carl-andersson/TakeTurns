@@ -1,8 +1,8 @@
 /*
- * Game.h
+ * sshader.h
  *
- * Copyright (c) 2011 Sebastian Ärleryd
  * CopyRight (c) 2012 Carl Andersson
+ * Copyright (c) 2011 Sebastian Ärleryd
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,8 +32,13 @@ void sshaderInit();
 
 GLuint linkProgram();
 GLuint compileShader(string_t shaderCode, GLenum type);
+GLuint getShaderId();
+
 
 void translate2f(float, float);
 void setColor3f(float,float,float);
+void setColor4f(float,float,float,float);
+
+void setScale2f(float,float);
 
 #endif //SSHADER_H
