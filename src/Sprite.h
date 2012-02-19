@@ -29,15 +29,26 @@
 #include "Widget.h"
 #include <string.h>
 #include "gdt.h"
+typedef struct {
+	float v[2];
+	float tc[2];
+} Vertex;
+
 
 class Sprite:public Widget{
 private:
+	static GLuint vertexBuf;
+	static GLuint indexBuf;
+	static const Vertex vert[];
 	static const GLfloat v[];
 	static const GLubyte i[];
-
 	static const string_t TAG;
-
+	GLuint texture;
 public:
+	Sprite(GLuint texture){
+		this->texture=texture;
+	}
+
 	static void init(GLuint);
 
 	void selfDraw();
