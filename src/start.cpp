@@ -23,7 +23,12 @@
  * THE SOFTWARE.
  */
 
+<<<<<<< HEAD
 #include <gdt/gdt.h>
+=======
+#include "gdt.h"
+#include "Matrix4f.h"
+>>>>>>> origin/master
 
 #include "Game.h"
 

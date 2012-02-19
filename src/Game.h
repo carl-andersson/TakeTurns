@@ -29,14 +29,23 @@
 #include <gdt/gdt.h>
 
 #include "Screen.h"
+#include "Sprite.h"
+#include "TextureManager.h"
+#include "ShaderManager.h"
 
 class Game {
 private:
 	static const char *TAG;
 	Screen mScreen;
+<<<<<<< HEAD
 
 	void loadAndPrintResource();
 
+=======
+	Sprite *sprites;
+	TextureManager mTM;
+	ShaderManager mSM;
+>>>>>>> origin/master
 public:
 	Game();
 

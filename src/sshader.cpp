@@ -34,10 +34,13 @@ GLuint SHADER_VERTEX_COLOR;
 GLuint SHADER_VERTEX_TRANSLATION;
 GLuint SHADER_VERTEX_POSITION;
 GLuint SHADER_VERTEX_SCALE;
+GLuint SHADER_FRAG_TEXTURE;
+GLuint SHADER_VERTEX_TEXTURE_COORDS;
 
 GLuint PROGRAM_ID;
 
 string_t vertexShaderCode = "\
+<<<<<<< HEAD
 precision highp float; \
 \
 attribute vec4 translation;  \
@@ -49,27 +52,57 @@ varying vec4 color;	\
 void main(void) { \
 	color = vertColor; \
     gl_Position = position+ vec4(translation.x, translation.y, 0, 0);\
+=======
+attribute highp vec4 translation;  \
+attribute highp vec4 position;\
+attribute highp vec4 vert_textureCoords;\
+attribute highp vec4 scale;\
+attribute highp vec4 vert_color;\
+varying mediump vec4 color;	\
+varying mediump vec4 textureCoords;	\
+void main(void) { \
+	textureCoords=vert_textureCoords;\
+    gl_Position = position*scale+ vec4(translation.x, translation.y, 0, 0);\
+	color=vert_color;\
+>>>>>>> origin/master
 }\
 ";
 
 string_t fragmentShaderCode = "         \
+<<<<<<< HEAD
 precision highp float; \
 \
 varying vec4 color;	\
 \
+=======
+uniform sampler2D texture;	\
+varying highp vec4 color;	\
+varying highp vec4 textureCoords;	\
+>>>>>>> origin/master
 void main(void) {                      \
-    gl_FragColor = vec4(color);   \
+    gl_FragColor = color*texture2D(texture,textureCoords.xy);   \
 }                                      \
 ";
 
 void sshaderInit(){
 	PROGRAM_ID=linkProgram();
-    SHADER_VERTEX_COLOR = glGetAttribLocation(PROGRAM_ID, "vert_color");
-    SHADER_VERTEX_POSITION = glGetAttribLocation(PROGRAM_ID, "position");
-    SHADER_VERTEX_SCALE = glGetAttribLocation(PROGRAM_ID, "scale");
-    SHADER_VERTEX_TRANSLATION=glGetAttribLocation(PROGRAM_ID, "translation");
-    gdt_log(LOG_NORMAL, TAG, "Shader created. Id:%i \nPointers: %i %i %i %i",PROGRAM_ID,SHADER_VERTEX_COLOR,SHADER_VERTEX_POSITION,SHADER_VERTEX_TRANSLATION,SHADER_VERTEX_SCALE);
-    glUseProgram(PROGRAM_ID);
+	SHADER_VERTEX_COLOR = glGetAttribLocation(PROGRAM_ID, "vert_color");
+	SHADER_VERTEX_POSITION = glGetAttribLocation(PROGRAM_ID, "position");
+	SHADER_VERTEX_SCALE = glGetAttribLocation(PROGRAM_ID, "scale");
+	SHADER_FRAG_TEXTURE = glGetUniformLocation(PROGRAM_ID,"texture");
+	SHADER_VERTEX_TEXTURE_COORDS =glGetAttribLocation(PROGRAM_ID, "vert_textureCoords");
+	SHADER_VERTEX_TRANSLATION=glGetAttribLocation(PROGRAM_ID, "translation");
+
+	//gdt_log(LOG_NORMAL, TAG, "Shader created. Id:%i \nPointers: %i %i %i %i",PROGRAM_ID,SHADER_VERTEX_COLOR,SHADER_VERTEX_POSITION,SHADER_VERTEX_TRANSLATION,SHADER_VERTEX_SCALE);
+	glUseProgram(PROGRAM_ID);
+}
+
+GLuint getTextcoordsLocation(){
+	return SHADER_VERTEX_TEXTURE_COORDS;
+}
+
+GLuint getTextureLocation(){
+	return SHADER_FRAG_TEXTURE;
 }
 
 GLuint getShaderId(){
@@ -143,5 +176,6 @@ void translate2f(float x, float y){
 void setScale2f(float sx ,float sy){
 	glVertexAttrib2f(SHADER_VERTEX_SCALE, sx, sy);
 }
+
 
 

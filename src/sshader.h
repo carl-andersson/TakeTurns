@@ -32,8 +32,10 @@ void sshaderInit();
 
 GLuint linkProgram();
 GLuint compileShader(string_t shaderCode, GLenum type);
-GLuint getShaderId();
 
+GLuint getShaderId();
+GLuint getTextcoordsLocation();
+GLuint getTextureLocation();
 
 void translate2f(float, float);
 void setColor3f(float,float,float);
@@ -41,4 +43,9 @@ void setColor4f(float,float,float,float);
 
 void setScale2f(float,float);
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> origin/master
 #endif //SSHADER_H

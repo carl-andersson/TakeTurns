@@ -1,4 +1,8 @@
 #include <vector>
+<<<<<<< HEAD
+=======
+#include <stdio.h>
+>>>>>>> origin/master
 
 /*
 decodePNG: The picoPNG function, decodes a PNG file buffer in memory, into a raw pixel buffer.
@@ -41,14 +45,22 @@ int decodePNG(std::vector<unsigned char>& out_image, unsigned long& image_width,
   //     2. Altered source versions must be plainly marked as such, and must not be
   //     misrepresented as being the original software.
   //     3. This notice may not be removed or altered from any source distribution.
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> origin/master
   // picoPNG is a PNG decoder in one C++ function of around 500 lines. Use picoPNG for
   // programs that need only 1 .cpp file. Since it's a single function, it's very limited,
   // it can convert a PNG to raw pixel data either converted to 32-bit RGBA color or
   // with no color conversion at all. For anything more complex, another tiny library
   // is available: LodePNG (lodepng.c(pp)), which is a single source and header file.
   // Apologies for the compact code style, it's to make this tiny.
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> origin/master
   static const unsigned long LENBASE[29] =  {3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,31,35,43,51,59,67,83,99,115,131,163,195,227,258};
   static const unsigned long LENEXTRA[29] = {0,0,0,0,0,0,0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4,  4,  5,  5,  5,  5,  0};
   static const unsigned long DISTBASE[30] =  {1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,257,385,513,769,1025,1537,2049,3073,4097,6145,8193,12289,16385,24577};
@@ -190,7 +202,11 @@ int decodePNG(std::vector<unsigned char>& out_image, unsigned long& image_width,
         error = tree.makeFromLengths(bitlen, 15); if(error) return; //now we've finally got HLIT and HDIST, so generate the code trees, and the function is done
         error = treeD.makeFromLengths(bitlenD, 15); if(error) return;
       }
+<<<<<<< HEAD
       void inflateHuffmanBlock(std::vector<unsigned char>& out, const unsigned char* in, size_t& bp, size_t& pos, size_t inlength, unsigned long btype) 
+=======
+      void inflateHuffmanBlock(std::vector<unsigned char>& out, const unsigned char* in, size_t& bp, size_t& pos, size_t inlength, unsigned long btype)
+>>>>>>> origin/master
       {
         if(btype == 1) { generateFixedTrees(codetree, codetreeD); }
         else if(btype == 2) { getTreeInflateDynamic(codetree, codetreeD, in, bp, inlength); if(error) return; }
@@ -367,7 +383,11 @@ int decodePNG(std::vector<unsigned char>& out_image, unsigned long& image_width,
     void readPngHeader(const unsigned char* in, size_t inlength) //read the information from the header and store it in the Info
     {
       if(inlength < 29) { error = 27; return; } //error: the data length is smaller than the length of the header
+<<<<<<< HEAD
       if(in[0] != 137 || in[1] != 80 || in[2] != 78 || in[3] != 71 || in[4] != 13 || in[5] != 10 || in[6] != 26 || in[7] != 10) { error = 28; return; } //no PNG signature
+=======
+      if(in[0] != 137 || in[1] != 80 || in[2] != 78 || in[3] != 71 || in[4] != 13 || in[5] != 10 || in[6] != 26 || in[7] != 10) { error = 28;printf("%d,%d,%d,%d,%d,%d,%d,%d\n",in[0],in[1],in[2],in[3],in[4],in[5],in[6],in[7]); return; } //no PNG signature
+>>>>>>> origin/master
       if(in[12] != 'I' || in[13] != 'H' || in[14] != 'D' || in[15] != 'R') { error = 29; return; } //error: it doesn't start with a IHDR chunk!
       info.width = read32bitInt(&in[16]); info.height = read32bitInt(&in[20]);
       info.bitDepth = in[24]; info.colorType = in[25];
@@ -534,7 +554,11 @@ int decodePNG(std::vector<unsigned char>& out_image, unsigned long& image_width,
 
 
 
+<<<<<<< HEAD
 
+=======
+/*
+>>>>>>> origin/master
 
 //an example using the PNG loading function:
 
@@ -562,12 +586,17 @@ void loadFile(std::vector<unsigned char>& buffer, const std::string& filename) /
 int main(int argc, char *argv[])
 {
   const char* filename = argc > 1 ? argv[1] : "test.png";
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> origin/master
   //load and decode
   std::vector<unsigned char> buffer, image;
   loadFile(buffer, filename);
   unsigned long w, h;
   int error = decodePNG(image, w, h, buffer.empty() ? 0 : &buffer[0], (unsigned long)buffer.size());
+<<<<<<< HEAD
   
   //if there's an error, display it
   if(error != 0) std::cout << "error: " << error << std::endl;
@@ -578,6 +607,18 @@ int main(int argc, char *argv[])
 }
 
 /*
+=======
+
+  //if there's an error, display it
+  if(error != 0) std::cout << "error: " << error << std::endl;
+
+  //the pixels are now in the vector "image", use it as texture, draw it, ...
+
+  if(image.size() > 4) std::cout << "width: " << w << " height: " << h << " first pixel: " << std::hex << int(image[0]) << int(image[1]) << int(image[2]) << int(image[3]) << std::endl;
+}
+
+
+>>>>>>> origin/master
   //this is test code, it displays the pixels of a 1 bit PNG. To use it, set the flag convert_to_rgba32 to false and load a 1-bit PNG image with a small size (so that its ASCII representation can fit in a console window)
   for(int y = 0; y < h; y++)
   {
@@ -590,3 +631,7 @@ int main(int argc, char *argv[])
   }
 */
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/master

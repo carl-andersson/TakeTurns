@@ -31,10 +31,15 @@
 #include "Screen.h"
 #include "sshader.h"
 #include "Sprite.h"
+#include <stdlib.h>
+#include <vector>
+
+
 
 const char *Game::TAG = "Game";
 
 Game::Game() {
+
 	gdt_log(LOG_NORMAL, TAG, "Game instance created.");
 
 	loadAndPrintResource();
@@ -71,22 +76,29 @@ void Game::loadAndPrintResource() {
 
 void Game::init() {
 	gdt_log(LOG_NORMAL, TAG, "Game initialized.");
+<<<<<<< HEAD
 }
 
 void Game::visible(bool newSurface) {
 	sshaderInit();
+=======
+	mTM.loadImagePNG("/pancake.png");
+	mSM.loadShaderProgram("/vert.jet","/frag.jet");
+>>>>>>> origin/master
 
 	int width = gdt_surface_width();
 	int height = gdt_surface_height();
 
 	gdt_log(LOG_NORMAL, TAG, "Visible with screen size (%d, %d).", width, height);
 	if (newSurface){
+		GLuint texture=mTM.linkTexture("/pancake.png");
+		sprites=new Sprite(texture);
+		sprites->mScaleY=2;
+		sprites->mScaleX=2;
 		sshaderInit();
 		Sprite::init(getShaderId());
 		glClearColor(0.4, 0.8, 0.4, 1);
 	}
-
-
 	mScreen = Screen(width,height);
 	glViewport(0, 0, width,height);
 }
@@ -94,10 +106,8 @@ void Game::visible(bool newSurface) {
 void Game::render(){
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	Sprite sp=Sprite();
-	sp.green=0.0;
-	sp.alpha=0.5;
-	sp.scaleY=mScreen.getRatio();
-	sp.draw();
+	sprites->draw();
+
 }
+
 
