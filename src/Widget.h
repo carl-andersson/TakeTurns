@@ -39,24 +39,24 @@ public:
 	float mX;
 	float mY;
 
-	float green;
-	float red;
-	float blue;
-	float alpha;
+	float mColorGreen;
+	float mColorRed;
+	float mColorBlue;
+	float mColorAlpha;
 
-	float scaleX;
-	float scaleY;
+	float mScaleX;
+	float mScaleY;
 
 	Widget(){
 		children=std::vector<Widget*>();
 		mX=0;
 		mY=0;
-		scaleX=1;
-		scaleY=1;
-		green=1;
-		blue=1;
-		red=1;
-		alpha=1;
+		mScaleX=1;
+		mScaleY=1;
+		mColorGreen=1;
+		mColorBlue=1;
+		mColorRed=1;
+		mColorAlpha=1;
 	}
 
 	void draw();

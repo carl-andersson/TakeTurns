@@ -24,6 +24,7 @@
  */
 
 #include "gdt.h"
+#include "Matrix4f.h"
 
 #include "Game.h"
 

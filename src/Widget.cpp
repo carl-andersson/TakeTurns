@@ -33,8 +33,8 @@ const string_t Widget::TAG="Widget";
 void Widget::draw(){
 
 	translate2f(mX,mY);
-	setColor4f(red,green,blue,alpha);
-	setScale2f(scaleX,scaleY);
+	setColor4f(mColorRed,mColorGreen,mColorBlue,mColorAlpha);
+	setScale2f(mScaleX,mScaleY);
 
 	selfDraw();
 

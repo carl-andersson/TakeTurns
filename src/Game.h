@@ -28,12 +28,17 @@
 
 #include "gdt.h"
 #include "Screen.h"
+#include "Sprite.h"
+#include "TextureManager.h"
+#include "ShaderManager.h"
 
 class Game {
 private:
 	static char *TAG;
 	Screen mScreen;
-
+	Sprite *sprites;
+	TextureManager mTM;
+	ShaderManager mSM;
 public:
 	Game();
 
