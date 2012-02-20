@@ -23,7 +23,7 @@ bool ShaderManager::loadShaderProgram(std::string vert,std::string frag){
 	text.fragData.append((char*)fragRawdata,fragLength);
 	text.fragLength=fragLength;
 
-	gdt_log(LOG_NORMAL, TAG, "test: %s\n%s",&text.vertData[0],&text.fragData[0]);
+	//gdt_log(LOG_NORMAL, TAG, "test: %s\n%s",&text.vertData[0],&text.fragData[0]);
 
 	gdt_resource_unload(vertRes);
 	gdt_resource_unload(fragRes);

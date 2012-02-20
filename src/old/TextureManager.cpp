@@ -6,6 +6,25 @@
 const string_t TextureManager::TAG="TextureManager";
 
 
+GLuint TextureManager::createTexture(std::string filename){
+	std::vector<unsigned char> data;
+	GLubyte *rawdata;
+	unsigned long int width,height;
+	int length;
+
+	resource_t res=gdt_resource_load(&filename[0]);
+	length=gdt_resource_length(res);
+	rawdata =(GLubyte*) gdt_resource_bytes (res);
+
+	decodePNG(data,width,height,rawdata,length);
+
+	GLuint id=createTexture(&data[0],width,height);
+	loadedResources[filename]=id;
+
+	gdt_resource_unload(res);
+	return id;
+}
+
 bool TextureManager::loadImagePNG(std::string filename){
 	Image& im=loadedImage[filename];
 	GLubyte *rawdata;

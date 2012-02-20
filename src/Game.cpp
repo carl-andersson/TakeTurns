@@ -84,8 +84,9 @@ void Game::visible(bool newSurface) {
 	loadAndPrintResource();
 
 	sshaderInit();
+	Texture::init();
 
-	mTM.loadImagePNG("/face.png");
+	Texture::loadPNG("/pancake.png");
 	//mSM.loadShaderProgram("/vert.jet","/frag.jet");
 
 	int width = gdt_surface_width();
@@ -93,7 +94,7 @@ void Game::visible(bool newSurface) {
 
 	gdt_log(LOG_NORMAL, TAG, "Visible with screen size (%d, %d).", width, height);
 	if (newSurface){
-		GLuint texture=mTM.linkTexture("/face.png");
+		GLuint texture=Texture::get("/pancake.png").textureID;
 		sprites=new Sprite(texture);
 		sprites->mScaleY=2;
 		sprites->mScaleX=2;

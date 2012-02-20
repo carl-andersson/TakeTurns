@@ -37,6 +37,7 @@ public:
 	}
 
 	bool loadImagePNG(std::string filename);
+	GLuint createTexture(std::string filename);
 
 	GLuint linkTexture(std::string filename);
 

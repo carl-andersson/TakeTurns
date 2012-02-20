@@ -30,7 +30,7 @@
 
 #include "Screen.h"
 #include "Sprite.h"
-#include "TextureManager.h"
+#include "Texture.h"
 #include "ShaderManager.h"
 
 class Game {
@@ -38,7 +38,6 @@ private:
 	static const char *TAG;
 	Screen mScreen;
 	Sprite *sprites;
-	TextureManager mTM;
 	ShaderManager mSM;
 
 	void loadAndPrintResource();
