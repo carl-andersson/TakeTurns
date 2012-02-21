@@ -23,12 +23,19 @@ private:
 		textureID=id;
 	}
 	static GLuint createTexture(GLubyte *data,GLuint width,GLuint height);
+	GLint textureID;
 public:
 	Texture(){
 		textureID=-1;
 	}
 	static void init();
-	GLint textureID;
+
+
+
+	GLint getID(){
+		return textureID;
+	}
+
 	bool isValid(){
 		if (textureID==-1)
 			return false;

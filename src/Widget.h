@@ -28,13 +28,31 @@
 #include <vector>
 #include <string.h>
 #include <gdt/gdt.h>
+#include "Shader.h"
 
 class Widget{
 
 private:
 	std::vector<Widget*> children;
 
+
 	static const string_t TAG;
+protected:
+	static Shader sShader;
+	//Shader mShader;
+	/*Widget(Shader shader){
+		mShader=shader;
+		mShader=sShader;
+		children=std::vector<Widget*>();
+		mX=0;
+		mY=0;
+		mScaleX=1;
+		mScaleY=1;
+		mColorGreen=1;
+		mColorBlue=1;
+		mColorRed=1;
+		mColorAlpha=1;
+	}*/
 public:
 	float mX;
 	float mY;
@@ -48,6 +66,7 @@ public:
 	float mScaleY;
 
 	Widget(){
+		//mShader=sShader;
 		children=std::vector<Widget*>();
 		mX=0;
 		mY=0;
@@ -59,7 +78,11 @@ public:
 		mColorAlpha=1;
 	}
 
-	void draw();
+
+
+
+
+	virtual void draw();
 	virtual void selfDraw(){gdt_log(LOG_NORMAL, TAG, "selfDraw");};
 
 

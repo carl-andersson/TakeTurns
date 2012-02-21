@@ -23,11 +23,10 @@
  * THE SOFTWARE.
  */
 
-#include <gdt/gdt.h>
-#include <gdt/gdt_gles2.h>
+
 
 #include "Sprite.h"
-#include "sshader.h"
+
 
 const Vertex Sprite::vert[]={{-0.5,0.5,1,0},
 		 {-0.5, -0.5,1,1},
@@ -42,9 +41,10 @@ const string_t Sprite::TAG="Sprite";
 GLuint Sprite::vertexBuf;
 GLuint Sprite::indexBuf;
 
-void Sprite::init(GLuint program){
-	GLuint positionAttrib = glGetAttribLocation(program, "position");
-	GLuint textcoordsAttrib =glGetAttribLocation(program,"vert_textureCoords");
+void Sprite::init(Shader shader){
+	Widget::sShader=shader;
+	GLuint positionAttrib = shader.getAttriLoc("position");
+	GLuint textcoordsAttrib = shader.getAttriLoc("vert_textureCoords");
 
 	glGenBuffers(1, &Sprite::vertexBuf);
 	//gdt_log(LOG_NORMAL, TAG, "vertexBuf:%d",vertexBuf);
@@ -60,13 +60,14 @@ void Sprite::init(GLuint program){
 	glEnableVertexAttribArray(positionAttrib);
 	glEnableVertexAttribArray(textcoordsAttrib);
 	glVertexAttribPointer(positionAttrib, 2, GL_FLOAT, GL_FALSE,sizeof(Vertex), 0);
-	glVertexAttribPointer(getTextcoordsLocation(), 2, GL_FLOAT, GL_FALSE,sizeof(Vertex), (void*)(2*sizeof(GL_FLOAT)));
+	glVertexAttribPointer(textcoordsAttrib, 2, GL_FLOAT, GL_FALSE,sizeof(Vertex), (void*)(2*sizeof(GL_FLOAT)));
 }
 
 void Sprite::selfDraw(){
 	//gdt_log(LOG_NORMAL, TAG, "selfDraw");
+	sShader.use();
 	glBindBuffer(GL_ARRAY_BUFFER, Sprite::vertexBuf);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Sprite::indexBuf);
-	glUniform1i(getTextureLocation(), texture);
+	sShader.setUniform1i("texture", mTexture.getID());
 	glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, NULL);
 }

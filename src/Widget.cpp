@@ -24,17 +24,19 @@
  */
 
 #include "Widget.h"
-#include "sshader.h"
 
 
 const string_t Widget::TAG="Widget";
 
+Shader Widget::sShader;
+
+
 
 void Widget::draw(){
 
-	translate2f(mX,mY);
-	setColor4f(mColorRed,mColorGreen,mColorBlue,mColorAlpha);
-	setScale2f(mScaleX,mScaleY);
+	sShader.setAttribute4f("translation",mX,mY,0,0);
+	sShader.setAttribute4f("vert_color",mColorRed,mColorGreen,mColorBlue,mColorAlpha);
+	sShader.setAttribute2f("scale",mScaleX,mScaleY);
 
 	selfDraw();
 
@@ -42,6 +44,6 @@ void Widget::draw(){
 		children[i]->draw();
 	}
 
-	translate2f(-mX,-mY);
+	sShader.setAttribute4f("translation",-mX,-mY,0,0);
 
 }

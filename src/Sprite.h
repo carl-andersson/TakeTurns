@@ -31,6 +31,7 @@
 #include <gdt/gdt.h>
 
 #include "Widget.h"
+#include "Texture.h"
 
 typedef struct {
 	float v[2];
@@ -46,13 +47,18 @@ private:
 	static const GLfloat v[];
 	static const GLubyte i[];
 	static const string_t TAG;
-	GLuint texture;
+	Texture mTexture;
 public:
-	Sprite(GLuint texture){
-		this->texture=texture;
+	Sprite(Texture texture){
+		mTexture=texture;
 	}
+	/*Sprite(Texture texture,Shader shader){
+		mTexture=texture;
+		mShader=shader;
+	}*/
 
-	static void init(GLuint);
+
+	static void init(Shader);
 
 	void selfDraw();
 

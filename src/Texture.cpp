@@ -13,6 +13,9 @@ GLuint Texture::texture[GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS];
 std::vector<GLuint> Texture::textureIDs;
 
 void Texture::init(){
+
+	gdt_log(LOG_NORMAL, TAG, "Max textures: %d",GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+
 	for(int i=GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS-1;i>=0;i--)
 		textureIDs.push_back(i);
 	glGenTextures(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, texture);

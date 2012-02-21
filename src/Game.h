@@ -27,18 +27,20 @@
 #define Game_h
 
 #include <gdt/gdt.h>
-
 #include "Screen.h"
 #include "Sprite.h"
 #include "Texture.h"
-#include "ShaderManager.h"
+#include "Shader.h"
+#include <string.h>
+#include <gdt/gdt_gles2.h>
+#include <stdlib.h>
+#include <vector>
 
 class Game {
 private:
 	static const char *TAG;
 	Screen mScreen;
 	Sprite *sprites;
-	ShaderManager mSM;
 
 	void loadAndPrintResource();
 
