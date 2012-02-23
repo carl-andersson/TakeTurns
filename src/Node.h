@@ -1,5 +1,5 @@
 /*
- * Widget.h
+ * Node.h
  *
  * CopyRight (c) 2012 Carl Andersson
  * CopyRight (c) 2012 Sebastian Ärleryd
@@ -23,8 +23,8 @@
  * THE SOFTWARE.
  */
 
-#ifndef WIDGET_H
-#define WIDGET_H
+#ifndef NODE_H
+#define NODE_H
 
 #include <vector>
 #include <string.h>
@@ -68,21 +68,10 @@ public:
 	float mScaleX;
 	float mScaleY;
 
-	Node() {
-		//mShader=sShader;
-		children = std::vector<Node*>();
-		mX = 0;
-		mY = 0;
-		mScaleX = 1;
-		mScaleY = 1;
-		mColorGreen = 1;
-		mColorBlue = 1;
-		mColorRed = 1;
-		mColorAlpha = 1;
-	}
+	Node();
 
-	virtual void draw();
+	void draw();
 	virtual void selfDraw(){gdt_log(LOG_NORMAL, TAG, "selfDraw");};
 };
 
-#endif //WIDGET_H
+#endif //NODE_H

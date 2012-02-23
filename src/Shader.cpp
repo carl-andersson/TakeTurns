@@ -23,7 +23,7 @@ const Shader Shader::load(std::string vertFile,std::string fragFile){
 	fragLength = gdt_resource_length(fragRes);
 	fragRawdata = gdt_resource_bytes(fragRes);
 
-	if (vertLength==0||fragLength==0){
+	if (vertLength == 0 || fragLength == 0){
 		gdt_fatal(TAG, "Unable to load shaders!: %s, %s", &vertFile[0],&fragFile[0]);
 	}
 

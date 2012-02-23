@@ -34,30 +34,36 @@ static void on_touch(touch_type_t what, int screenX, int screenY) {
 }
 
 void gdt_hook_initialize() {
+	gdt_log(LOG_NORMAL, "start", "gdt_hook_initialize");
+
 	game = new Game();
 	game->init();
 }
 
 void gdt_hook_visible(bool newSurface) {
+	gdt_log(LOG_NORMAL, "start", "gdt_hook_visible");
+
 	game->visible(newSurface);
 }
 
 void gdt_hook_active() {
-
+	gdt_log(LOG_NORMAL, "start", "gdt_hook_active");
 }
 
 void gdt_hook_inactive() {
-
+	gdt_log(LOG_NORMAL, "start", "gdt_hook_inactive");
 }
 
 void gdt_hook_save_state() {
-
+	gdt_log(LOG_NORMAL, "start", "gdt_hook_save_state");
 }
 
 void gdt_hook_hidden() {
-
+	gdt_log(LOG_NORMAL, "start", "gdt_hook_hidden");
 }
 
 void gdt_hook_render() {
+	//gdt_log(LOG_NORMAL, "start", "gdt_hook_render");
+
 	game->render();
 }

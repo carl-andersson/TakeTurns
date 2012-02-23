@@ -1,8 +1,9 @@
 /*
  * Sprite.cpp
  *
- * Copyright (c) 2011 Rickard Edström
  * CopyRight (c) 2012 Carl Andersson
+ * Copyright (c) 2011 Rickard Edström
+ * CopyRight (c) 2012 Sebastian Ärleryd
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,26 +24,24 @@
  * THE SOFTWARE.
  */
 
-
-
 #include "Sprite.h"
 
-
-const Vertex Sprite::vert[]={{-0.5,0.5,1,0},
-		 {-0.5, -0.5,1,1},
-		 {0.5, 0.5,0,0},
-		 {0.5, -0.5,0,1
-}};
+const Vertex Sprite::vert[] = {
+	{-0.5,0.5,1,0},
+	{-0.5, -0.5,1,1},
+	{0.5, 0.5,0,0},
+	{0.5, -0.5,0,1}
+};
 
 const GLubyte Sprite::i[] = { 0, 1, 2, 3 };
 
-const string_t Sprite::TAG="Sprite";
+const string_t Sprite::TAG = "Sprite";
 
 GLuint Sprite::vertexBuf;
 GLuint Sprite::indexBuf;
 
-void Sprite::init(Shader shader){
-	Widget::sShader=shader;
+void Sprite::init(Shader shader) {
+	Node::sShader = shader;
 	GLuint positionAttrib = shader.getAttriLoc("position");
 	GLuint textcoordsAttrib = shader.getAttriLoc("vert_textureCoords");
 
@@ -50,7 +49,6 @@ void Sprite::init(Shader shader){
 	//gdt_log(LOG_NORMAL, TAG, "vertexBuf:%d",vertexBuf);
 	glBindBuffer(GL_ARRAY_BUFFER, Sprite::vertexBuf);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vert), vert, GL_STATIC_DRAW);
-
 
 	glGenBuffers(1, &Sprite::indexBuf);
 	//gdt_log(LOG_NORMAL, TAG, "indexBuf:%d",indexBuf);
@@ -63,8 +61,9 @@ void Sprite::init(Shader shader){
 	glVertexAttribPointer(textcoordsAttrib, 2, GL_FLOAT, GL_FALSE,sizeof(Vertex), (void*)(2*sizeof(GL_FLOAT)));
 }
 
-void Sprite::selfDraw(){
+void Sprite::selfDraw() {
 	//gdt_log(LOG_NORMAL, TAG, "selfDraw");
+
 	sShader.use();
 	glBindBuffer(GL_ARRAY_BUFFER, Sprite::vertexBuf);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Sprite::indexBuf);

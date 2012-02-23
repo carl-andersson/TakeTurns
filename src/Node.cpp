@@ -25,11 +25,24 @@
 
 #include "Node.h"
 
-const string_t Widget::TAG = "Node";
+const string_t Node::TAG = "Node";
 
-Shader Widget::sShader;
+Shader Node::sShader;
 
-void Widget::draw() {
+Node::Node() {
+	//mShader=sShader;
+	mChildren = std::vector<Node*>();
+	mX = 0;
+	mY = 0;
+	mScaleX = 1;
+	mScaleY = 1;
+	mColorGreen = 1;
+	mColorBlue = 1;
+	mColorRed = 1;
+	mColorAlpha = 1;
+}
+
+void Node::draw() {
 	sShader.setAttribute4f("translation",mX,mY,0,0);
 	sShader.setAttribute4f("vert_color",mColorRed,mColorGreen,mColorBlue,mColorAlpha);
 	sShader.setAttribute2f("scale",mScaleX,mScaleY);

@@ -68,15 +68,11 @@ void Game::init() {
 void Game::visible(bool newSurface) {
 	gdt_log(LOG_NORMAL, TAG, "Game visible.");
 
-
-
 	int width = gdt_surface_width();
 	int height = gdt_surface_height();
 
 	gdt_log(LOG_NORMAL, TAG, "%sisible with screen size (%d, %d).",newSurface?"New v":"V", width, height);
 	if (newSurface){
-		loadAndPrintResource();
-
 		Texture::init();
 
 		Texture t=Texture::loadPNG("/pancake.png");
@@ -101,4 +97,5 @@ void Game::render(){
 
 	sprites->draw();
 
+	//gdt_log(LOG_NORMAL, TAG, "HI");
 }
