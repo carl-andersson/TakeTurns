@@ -43,7 +43,7 @@ public:
 			return true;
 		}
 	}
-
+	static const Texture createTexture(std::string text,GLubyte *data,GLuint width,GLuint height);
 	static const Texture loadPNG(std::string filename);
 	static const Texture get(std::string filename);
 

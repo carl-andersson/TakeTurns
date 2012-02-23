@@ -40,7 +40,7 @@ typedef struct {
 
 
 class Sprite:public Widget{
-private:
+protected:
 	static GLuint vertexBuf;
 	static GLuint indexBuf;
 	static const Vertex vert[];
@@ -48,6 +48,9 @@ private:
 	static const GLubyte i[];
 	static const string_t TAG;
 	Texture mTexture;
+	Sprite(){
+
+	}
 public:
 	Sprite(Texture texture){
 		mTexture=texture;

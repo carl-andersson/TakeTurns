@@ -31,10 +31,11 @@
 
 class Screen{
 private:
+
+public:
 	GLuint mWidth;
 	GLuint mHeight;
 	float  mRatio;
-public:
 	Screen(GLuint width, GLuint height){
 		mWidth=width;
 		mHeight=height;

@@ -35,12 +35,14 @@
 #include <gdt/gdt_gles2.h>
 #include <stdlib.h>
 #include <vector>
+#include "Playground.h"
 
 class Game {
 private:
 	static const char *TAG;
 	Screen mScreen;
 	Sprite *sprites;
+	Playground *playG;
 
 	void loadAndPrintResource();
 
@@ -50,6 +52,7 @@ public:
 	//gdt events
 	void init();
 	void visible(bool newSurface);
+	void handleTouch(touch_type_t what, int screenX, int screenY);
 
 	void render();
 };

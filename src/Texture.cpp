@@ -18,7 +18,7 @@ void Texture::init(){
 
 	for(int i=GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS-1;i>=0;i--)
 		textureIDs.push_back(i);
-	glGenTextures(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, texture);
+
 }
 
 const Texture Texture::loadPNG(std::string filename){
@@ -57,9 +57,10 @@ const Texture Texture::get(std::string filename){
 GLuint Texture::createTexture(GLubyte *data,GLuint width,GLuint height){
 	GLuint textureID = textureIDs.back();
 	textureIDs.pop_back();
+	glGenTextures(1, &texture[textureID]);
 	glActiveTexture(GL_TEXTURE0+textureID);
 	glBindTexture(GL_TEXTURE_2D, texture[textureID]);
-
+	gdt_log(LOG_NORMAL, TAG, "selfDraw Texture: %d, texture pointer: %d",textureID,texture[textureID]);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -71,6 +72,14 @@ GLuint Texture::createTexture(GLubyte *data,GLuint width,GLuint height){
 		GL_RGBA, GL_UNSIGNED_BYTE,   /* external format, type */
 		(void*)data                      /* pixels */
 	);
-
 	return textureID;
+}
+
+const Texture Texture::createTexture(std::string text,GLubyte *data,GLuint width,GLuint height){
+	if(loadedTextures[text].textureID!=-1){
+		gdt_fatal(TAG, "Texture already loaded!: %s", &text[0]);
+	}
+	GLuint id=createTexture(data,width,height);
+	loadedTextures[text]=id;
+	return Texture(id);
 }

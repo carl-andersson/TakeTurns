@@ -64,7 +64,7 @@ void Sprite::init(Shader shader){
 }
 
 void Sprite::selfDraw(){
-	//gdt_log(LOG_NORMAL, TAG, "selfDraw");
+	gdt_log(LOG_NORMAL, TAG, "selfDraw Texture: %d",mTexture.getID());
 	sShader.use();
 	glBindBuffer(GL_ARRAY_BUFFER, Sprite::vertexBuf);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Sprite::indexBuf);

@@ -85,8 +85,11 @@ void Game::visible(bool newSurface) {
 		//GLuint texture=Texture::get("/pancake.png").textureID;
 		Sprite::init(s);
 		sprites=new Sprite(t);
-		sprites->mScaleY=2;
-		sprites->mScaleX=2;
+		playG=new Playground("game",100,100);
+		playG->mScaleY=2;
+		playG->mScaleX=2;
+		sprites->mScaleY=1;
+		sprites->mScaleX=1;
 		//sshaderInit();
 
 		glClearColor(0.4, 0.8, 0.4, 1);
@@ -96,9 +99,18 @@ void Game::visible(bool newSurface) {
 	glViewport(0, 0, width,height);
 }
 
+void Game::handleTouch(touch_type_t what, int screenX, int screenY){
+	gdt_log(LOG_NORMAL, TAG, "Touch!");
+	playG->setPixel(99-(int)(screenX/(float)mScreen.mWidth*100),99-(int)(screenY/(float)mScreen.mHeight*100),255,255,0);
+}
+
 void Game::render(){
 	glClear(GL_COLOR_BUFFER_BIT);
+	playG->updateTexture();
 
+	playG->draw();
 	sprites->draw();
 
+
 }
+
