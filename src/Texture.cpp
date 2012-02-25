@@ -26,6 +26,7 @@
 #include "Texture.h"
 
 #include "GdtResource.h"
+#include "GLUtils.h"
 
 const string_t Texture::TAG = "Texture";
 
@@ -78,7 +79,7 @@ GLuint Texture::createTexture(GLubyte *data, GLint format, GLuint width, GLuint 
 	if(error == GL_NO_ERROR)
 		gdt_log(LOG_NORMAL, TAG, "No errors from OpenGL when creating texture.");
 	else {
-		string_t error_string = gdt_gl_error_string(error);
+		string_t error_string = GLErrorString(error);
 		gdt_fatal(TAG, "Got error from OpenGL when creating texture: %s.", error_string);
 		//glDeleteTextures(1, &newTextureID);
 		//return -1;
