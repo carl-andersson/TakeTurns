@@ -1,5 +1,5 @@
 /*
- * Sprite.cpp
+ * Shader.h
  *
  * CopyRight (c) 2012 Carl Andersson
  * CopyRight (c) 2012 Sebastian Ärleryd
@@ -26,31 +26,27 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include <gdt/gdt_gles2.h>
 #include <string>
 #include <map>
+
+#include <gdt/gdt_gles2.h>
 
 class Shader{
 private:
 	static const string_t TAG;
 
 	GLint programID;
-	static std::map<std::string,Shader> loadedShaders;
+	static std::map<std::string, Shader> loadedShaders;
 	static GLuint compileShader(string_t shaderCode, GLenum type);
 
 public:
-	Shader() {
-		programID=-1;
-	}
-	Shader(GLint id){
-		programID=id;
-	}
+	static const Shader load(std::string vertFile, std::string fragFile);
+	static const Shader get(std::string vertFile, std::string fragFile);
 
-	void use(){
-		glUseProgram(programID);
-	}
-	static const Shader load(std::string vertFile,std::string fragFile);
-	static const Shader get(std::string vertFile,std::string fragFile);
+	Shader();
+	Shader(GLint id);
+
+	void use();
 
 	bool setUniform1i(string_t unifo,int i);
 

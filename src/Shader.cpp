@@ -1,13 +1,35 @@
-
+/*
+ * Shader.cpp
+ *
+ * Copyright (c) 2011 Sebastian Ärleryd
+ * CopyRight (c) 2012 Carl Andersson
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 
 #include "Shader.h"
 
-const string_t Shader::TAG="Shader";
+const string_t Shader::TAG = "Shader";
 
-std::map<std::string,Shader> Shader::loadedShaders;
+std::map<std::string, Shader> Shader::loadedShaders;
 
-
-const Shader Shader::load(std::string vertFile,std::string fragFile){
+const Shader Shader::load(std::string vertFile, std::string fragFile){
 	if (loadedShaders[vertFile+fragFile].programID!=-1){
 		gdt_fatal(TAG, "Shader already loaded!: %s, %s", &vertFile[0],&fragFile[0]);
 	}
@@ -96,22 +118,17 @@ const Shader Shader::get(std::string vertFile,std::string fragFile){
 	return loadedShaders[vertFile+fragFile];
 }
 
+Shader::Shader() : programID(-1) {}
+
+Shader::Shader(GLint id) : programID(id) {}
+
+void Shader::use(){
+	glUseProgram(programID);
+}
 
 GLint Shader::getAttriLoc(string_t attri){
 	return glGetAttribLocation(programID, attri);
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 bool Shader::setAttribute4f(string_t attri,float f1,float f2,float f3,float f4){
 	GLint attriLoc=glGetAttribLocation(programID, attri);
@@ -121,6 +138,7 @@ bool Shader::setAttribute4f(string_t attri,float f1,float f2,float f3,float f4){
 	glVertexAttrib4f(attriLoc,f1,f2,f3,f4);
 	return true;
 }
+
 bool Shader::setAttribute3f(string_t attri,float f1,float f2,float f3){
 	GLint attriLoc=glGetAttribLocation(programID, attri);
 	if(attriLoc==-1){
@@ -129,6 +147,7 @@ bool Shader::setAttribute3f(string_t attri,float f1,float f2,float f3){
 	glVertexAttrib3f(attriLoc,f1,f2,f3);
 	return true;
 }
+
 bool Shader::setAttribute2f(string_t attri,float f1,float f2){
 	GLint attriLoc=glGetAttribLocation(programID, attri);
 	if(attriLoc==-1){
@@ -137,6 +156,7 @@ bool Shader::setAttribute2f(string_t attri,float f1,float f2){
 	glVertexAttrib2f(attriLoc,f1,f2);
 	return true;
 }
+
 bool Shader::setAttribute1f(string_t attri,float f1){
 	GLint attriLoc=glGetAttribLocation(programID, attri);
 	if(attriLoc==-1){
@@ -190,6 +210,7 @@ bool Shader::setUniform4f(string_t unifo,float f1,float f2,float f3,float f4){
 	glUniform4f(unifoLoc,f1,f2,f3,f4);
 	return true;
 }
+
 bool Shader::setUniform3f(string_t unifo,float f1,float f2,float f3){
 	GLint unifoLoc=glGetUniformLocation(programID, unifo);
 	if(unifoLoc==-1){
@@ -198,6 +219,7 @@ bool Shader::setUniform3f(string_t unifo,float f1,float f2,float f3){
 	glUniform3f(unifoLoc,f1,f2,f3);
 	return true;
 }
+
 bool Shader::setUniform2f(string_t unifo,float f1,float f2){
 	GLint unifoLoc=glGetUniformLocation(programID, unifo);
 	if(unifoLoc==-1){
@@ -206,6 +228,7 @@ bool Shader::setUniform2f(string_t unifo,float f1,float f2){
 	glUniform2f(unifoLoc,f1,f2);
 	return true;
 }
+
 bool Shader::setUniform1f(string_t unifo,float f1){
 	GLint unifoLoc=glGetUniformLocation(programID, unifo);
 	if(unifoLoc==-1){
@@ -223,6 +246,7 @@ bool Shader::setUniform4f(string_t unifo,float *f){
 	glUniform4f(unifoLoc,f[1],f[2],f[3],f[4]);
 	return true;
 }
+
 bool Shader::setUniform3f(string_t unifo,float *f){
 	GLint unifoLoc=glGetUniformLocation(programID, unifo);
 	if(unifoLoc==-1){
@@ -231,6 +255,7 @@ bool Shader::setUniform3f(string_t unifo,float *f){
 	glUniform3f(unifoLoc,f[1],f[2],f[3]);
 	return true;
 }
+
 bool Shader::setUniform2f(string_t unifo,float *f){
 	GLint unifoLoc=glGetUniformLocation(programID, unifo);
 	if(unifoLoc==-1){
@@ -239,6 +264,7 @@ bool Shader::setUniform2f(string_t unifo,float *f){
 	glUniform2f(unifoLoc,f[1],f[2]);
 	return true;
 }
+
 bool Shader::setUniform1f(string_t unifo,float *f){
 	GLint unifoLoc=glGetUniformLocation(programID, unifo);
 	if(unifoLoc==-1){
@@ -247,6 +273,7 @@ bool Shader::setUniform1f(string_t unifo,float *f){
 	glUniform1f(unifoLoc,f[1]);
 	return true;
 }
+
 bool Shader::setUniform1i(string_t unifo,int i){
 	GLint unifoLoc=glGetUniformLocation(programID, unifo);
 	if(unifoLoc==-1){

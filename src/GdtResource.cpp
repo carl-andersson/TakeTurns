@@ -1,8 +1,8 @@
 /*
- * Sprite.h
+ * GdtResource.cpp
  *
+ * Copyright (c) 2011 Sebastian Ärleryd
  * CopyRight (c) 2012 Carl Andersson
- * CopyRight (c) 2012 Sebastian Ärleryd
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,47 +23,42 @@
  * THE SOFTWARE.
  */
 
-#ifndef SPRITE_H
-#define SPRITE_H
+#include "GdtResource.h"
 
-#include <string.h>
+/*
 
-#include <gdt/gdt_gles2.h>
-#include <gdt/gdt.h>
+void*      gdt_resource_bytes (resource_t resource);
+int32_t    gdt_resource_length(resource_t resource);
+resource_t gdt_resource_load  (string_t   resourcePath);
+void       gdt_resource_unload(resource_t resource);
 
-#include "Node.h"
-#include "Texture.h"
+*/
 
-typedef struct {
-	float v[2];
-	float tc[2];
-} Vertex;
+GdtResource::GdtResource(std::string path) {
+	mResource = gdt_resource_load(path.c_str());
+}
 
-class Sprite : public Node {
-private:
-	static const string_t TAG;
+GdtResource::~GdtResource() {
+	if(mResource == NULL)
+		return;
 
-	static GLuint vertexBuf;
-	static GLuint indexBuf;
-	static const Vertex vert[];
-	static const GLfloat v[];
-	static const GLubyte i[];
+	gdt_resource_unload(mResource);
+}
 
-protected:
-	Texture *mTexture;
-	//Texture mTexture2;
+bool GdtResource::isValid() {
+	return mResource != NULL;
+}
 
-public:
-	static void init(Shader);
+int32_t GdtResource::getLength() {
+	if(mResource == NULL)
+		return -1;
 
-	Sprite() {}
-	//Sprite(Texture texture1, Texture texture2) : mTexture(texture1), mTexture2(texture2) {}
-	Sprite(Texture *texture) : mTexture(texture) {};
+	return gdt_resource_length(mResource);
+}
 
-	Texture * getTexture();
+void * GdtResource::getBytes() {
+	if(mResource == NULL)
+		return NULL;
 
-	void selfDraw();
-};
-
-#endif //SPRITE_H
-
+	return gdt_resource_bytes(mResource);
+}

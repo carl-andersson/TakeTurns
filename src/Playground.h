@@ -1,8 +1,8 @@
 /*
- * Sprite.h
+ * Playground.h
  *
+ * Copyright (c) 2011 Sebastian Ärleryd
  * CopyRight (c) 2012 Carl Andersson
- * CopyRight (c) 2012 Sebastian Ärleryd
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,47 +23,49 @@
  * THE SOFTWARE.
  */
 
-#ifndef SPRITE_H
-#define SPRITE_H
-
-#include <string.h>
+#ifndef PLAYGROUND_H
+#define PLAYGROUND_H
 
 #include <gdt/gdt_gles2.h>
-#include <gdt/gdt.h>
 
-#include "Node.h"
+#include "Sprite.h"
 #include "Texture.h"
 
 typedef struct {
-	float v[2];
-	float tc[2];
-} Vertex;
+	GLubyte red, green, blue, alpha;
+} pixel2;
 
-class Sprite : public Node {
+class Playground : public Sprite {
 private:
-	static const string_t TAG;
-
-	static GLuint vertexBuf;
-	static GLuint indexBuf;
-	static const Vertex vert[];
-	static const GLfloat v[];
-	static const GLubyte i[];
-
-protected:
-	Texture *mTexture;
-	//Texture mTexture2;
+	pixel *data;
+	int width;
+	int height;
+	bool dirty;
+	int xMin, Ymin, xMax, yMax;
 
 public:
-	static void init(Shader);
+	Playground(std::string name,int w, int h){
+		width = w;
+		height = h;
+		data = (pixel *) calloc(width*height, sizeof(pixel));
+		mTexture = Texture::createTexture(name, (GLubyte *) data, width, height);
+		data[1040].red = 255;
+	}
 
-	Sprite() {}
-	//Sprite(Texture texture1, Texture texture2) : mTexture(texture1), mTexture2(texture2) {}
-	Sprite(Texture *texture) : mTexture(texture) {};
+	~Playground(){
+		free(data);
+	}
 
-	Texture * getTexture();
+	void setPixel(int x, int y,float r,float g,float b){
+		data[width*y+x].red = r;
+		data[width*y+x].green = g;
+		data[width*y+x].blue = b;
+	}
 
-	void selfDraw();
+	void updateTexture(){
+		mTexture.useAs(GL_TEXTURE0);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (const GLvoid *) data);
+	}
 };
 
-#endif //SPRITE_H
-
+#endif //PLAYGROUND_H

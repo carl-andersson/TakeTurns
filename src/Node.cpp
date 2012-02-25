@@ -30,7 +30,6 @@ const string_t Node::TAG = "Node";
 Shader Node::sShader;
 
 Node::Node() {
-	//mShader=sShader;
 	mChildren = std::vector<Node*>();
 	mX = 0;
 	mY = 0;
@@ -40,6 +39,10 @@ Node::Node() {
 	mColorBlue = 1;
 	mColorRed = 1;
 	mColorAlpha = 1;
+}
+
+void Node::selfDraw() {
+	gdt_log(LOG_NORMAL, TAG, "selfDraw");
 }
 
 void Node::draw() {

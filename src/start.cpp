@@ -30,12 +30,14 @@
 
 Game *game;
 
-static void on_touch(touch_type_t what, int screenX, int screenY) {
+void on_touch(touch_type_t what, int screenX, int screenY) {
+	game->handleTouch(what,screenX,screenY);
 }
 
 void gdt_hook_initialize() {
 	gdt_log(LOG_NORMAL, "start", "gdt_hook_initialize");
 
+	gdt_set_callback_touch(&on_touch);
 	game = new Game();
 	game->init();
 }

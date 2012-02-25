@@ -71,7 +71,7 @@ public:
 	Node();
 
 	void draw();
-	virtual void selfDraw(){gdt_log(LOG_NORMAL, TAG, "selfDraw");};
+	virtual void selfDraw();
 };
 
 #endif //NODE_H

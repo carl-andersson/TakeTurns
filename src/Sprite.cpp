@@ -27,10 +27,10 @@
 #include "Sprite.h"
 
 const Vertex Sprite::vert[] = {
-	{-0.5,0.5,1,0},
-	{-0.5, -0.5,1,1},
-	{0.5, 0.5,0,0},
-	{0.5, -0.5,0,1}
+		{-0.5,0.5,1,0},
+		{-0.5, -0.5,1,1},
+		{0.5, 0.5,0,0},
+		{0.5, -0.5,0,1}
 };
 
 const GLubyte Sprite::i[] = { 0, 1, 2, 3 };
@@ -61,12 +61,32 @@ void Sprite::init(Shader shader) {
 	glVertexAttribPointer(textcoordsAttrib, 2, GL_FLOAT, GL_FALSE,sizeof(Vertex), (void*)(2*sizeof(GL_FLOAT)));
 }
 
-void Sprite::selfDraw() {
-	//gdt_log(LOG_NORMAL, TAG, "selfDraw");
+Texture * Sprite::getTexture() {
+	return mTexture;
+}
 
+void Sprite::selfDraw() {
+	mTexture->useAs(GL_TEXTURE0);
+	//mTexture2.useAs(GL_TEXTURE1);
 	sShader.use();
+
 	glBindBuffer(GL_ARRAY_BUFFER, Sprite::vertexBuf);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Sprite::indexBuf);
-	sShader.setUniform1i("texture", mTexture.getID());
+
+	sShader.setUniform1i("texture1", GL_TEXTURE0);
+	//sShader.setUniform1i("texture2", GL_TEXTURE1-GL_TEXTURE0);
+
+	/*
+	if(sShader.setUniform1i("texture1", GL_TEXTURE0))
+		gdt_log(LOG_NORMAL, TAG, "setting texture1 worked.");
+	else
+		gdt_log(LOG_NORMAL, TAG, "setting texture1 FAILED.");
+	if(sShader.setUniform1i("texture2", GL_TEXTURE1-GL_TEXTURE0))
+		gdt_log(LOG_NORMAL, TAG, "setting texture2 worked.");
+	else
+		gdt_log(LOG_NORMAL, TAG, "setting texture2 FAILED.");
+	*/
+
 	glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, NULL);
 }
+

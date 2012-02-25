@@ -1,8 +1,8 @@
 /*
- * Sprite.h
+ * ModifiableTexture.h
  *
+ * Copyright (c) 2011 Sebastian Ärleryd
  * CopyRight (c) 2012 Carl Andersson
- * CopyRight (c) 2012 Sebastian Ärleryd
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,47 +23,35 @@
  * THE SOFTWARE.
  */
 
-#ifndef SPRITE_H
-#define SPRITE_H
-
-#include <string.h>
+#ifndef MODIFIABLETEXTURE_H
+#define MODIFIABLETEXTURE_H
 
 #include <gdt/gdt_gles2.h>
-#include <gdt/gdt.h>
 
-#include "Node.h"
 #include "Texture.h"
 
 typedef struct {
-	float v[2];
-	float tc[2];
-} Vertex;
+	GLubyte red, green, blue;
+} pixel;
 
-class Sprite : public Node {
+class ModifiableTexture : public Texture {
 private:
 	static const string_t TAG;
 
-	static GLuint vertexBuf;
-	static GLuint indexBuf;
-	static const Vertex vert[];
-	static const GLfloat v[];
-	static const GLubyte i[];
-
-protected:
-	Texture *mTexture;
-	//Texture mTexture2;
+	pixel *mData;
+	Texture mTexture;
+	bool mDirty;
 
 public:
-	static void init(Shader);
+	ModifiableTexture(int width, int height);
+	~ModifiableTexture();
 
-	Sprite() {}
-	//Sprite(Texture texture1, Texture texture2) : mTexture(texture1), mTexture2(texture2) {}
-	Sprite(Texture *texture) : mTexture(texture) {};
+	void clear(GLubyte red, GLubyte green, GLubyte blue);
 
-	Texture * getTexture();
+	pixel getPixel(int x, int y);
+	void setPixel(int x, int y, GLubyte red, GLubyte green, GLubyte blue);
 
-	void selfDraw();
+	void useAs(GLuint textureUnit);
 };
 
-#endif //SPRITE_H
-
+#endif //MODIFIABLETEXTURE_H
