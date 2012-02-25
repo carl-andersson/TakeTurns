@@ -145,9 +145,7 @@ void Game::handleTouch(touch_type_t what, int screenX, int screenY) {
 
 void Game::render(){
 	glClear(GL_COLOR_BUFFER_BIT);
-	//nPlayground->updateTexture();
 
-	//nPlayground->draw();
 	mPlayground->draw();
 	mSprite->draw();
 }

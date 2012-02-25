@@ -28,6 +28,7 @@
 #include <gdt/gdt_gles2.h>
 
 class Screen{
+
 public:
 	GLuint mWidth;
 	GLuint mHeight;

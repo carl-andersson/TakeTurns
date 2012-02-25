@@ -66,4 +66,3 @@ public:
 };
 
 #endif //SPRITE_H
-
