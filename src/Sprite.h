@@ -54,7 +54,7 @@ protected:
 	//Texture mTexture2;
 
 public:
-	static void init(Shader);
+	static void init(Shader*);
 
 	Sprite() {}
 	//Sprite(Texture texture1, Texture texture2) : mTexture(texture1), mTexture2(texture2) {}

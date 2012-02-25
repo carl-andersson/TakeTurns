@@ -27,7 +27,7 @@
 
 const string_t Node::TAG = "Node";
 
-Shader Node::sShader;
+Shader* Node::sShader;
 
 Node::Node() {
 	mChildren = std::vector<Node*>();
@@ -46,9 +46,9 @@ void Node::selfDraw() {
 }
 
 void Node::draw() {
-	sShader.setAttribute4f("translation",mX,mY,0,0);
-	sShader.setAttribute4f("vert_color",mColorRed,mColorGreen,mColorBlue,mColorAlpha);
-	sShader.setAttribute2f("scale",mScaleX,mScaleY);
+	sShader->setAttribute4f("translation",mX,mY,0,0);
+	sShader->setAttribute4f("vert_color",mColorRed,mColorGreen,mColorBlue,mColorAlpha);
+	sShader->setAttribute2f("scale",mScaleX,mScaleY);
 
 	selfDraw();
 
@@ -56,5 +56,5 @@ void Node::draw() {
 		mChildren[i]->draw();
 	}
 
-	sShader.setAttribute4f("translation",-mX,-mY,0,0);
+	sShader->setAttribute4f("translation",-mX,-mY,0,0);
 }

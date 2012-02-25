@@ -98,10 +98,11 @@ void Game::visible(bool newSurface) {
 
 	gdt_log(LOG_NORMAL, TAG, "%sisible with screen size (%d, %d).",newSurface?"New v":"V", width, height);
 	if (newSurface){
+
 		//Texture::init();
 
 		Texture *t1 = Texture::loadPNG("/scene.png");
-		Shader s = Shader::load("/vert.jet","/frag.jet");
+		Shader *s = Shader::load("/vert.jet","/frag.jet");
 
 		//GLuint texture=Texture::get("/pancake.png").textureID;
 		Sprite::init(s);

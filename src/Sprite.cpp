@@ -40,10 +40,10 @@ const string_t Sprite::TAG = "Sprite";
 GLuint Sprite::vertexBuf;
 GLuint Sprite::indexBuf;
 
-void Sprite::init(Shader shader) {
+void Sprite::init(Shader *shader) {
 	Node::sShader = shader;
-	GLuint positionAttrib = shader.getAttriLoc("position");
-	GLuint textcoordsAttrib = shader.getAttriLoc("vert_textureCoords");
+	GLuint positionAttrib = shader->getAttriLoc("position");
+	GLuint textcoordsAttrib = shader->getAttriLoc("vert_textureCoords");
 
 	glGenBuffers(1, &Sprite::vertexBuf);
 	//gdt_log(LOG_NORMAL, TAG, "vertexBuf:%d",vertexBuf);
@@ -68,12 +68,12 @@ Texture * Sprite::getTexture() {
 void Sprite::selfDraw() {
 	mTexture->useAs(GL_TEXTURE0);
 	//mTexture2.useAs(GL_TEXTURE1);
-	sShader.use();
+	sShader->use();
 
 	glBindBuffer(GL_ARRAY_BUFFER, Sprite::vertexBuf);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Sprite::indexBuf);
 
-	sShader.setUniform1i("texture1", GL_TEXTURE0);
+	sShader->setUniform1i("texture1", GL_TEXTURE0);
 	//sShader.setUniform1i("texture2", GL_TEXTURE1-GL_TEXTURE0);
 
 	/*

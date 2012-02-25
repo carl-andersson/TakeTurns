@@ -27,26 +27,29 @@
 
 const string_t Shader::TAG = "Shader";
 
-std::map<std::string, Shader> Shader::loadedShaders;
+std::map<std::string, Shader*> Shader::sLoadedShaders;
 
-const Shader Shader::load(std::string vertFile, std::string fragFile){
-	if (loadedShaders[vertFile+fragFile].programID!=-1){
-		gdt_fatal(TAG, "Shader already loaded!: %s, %s", &vertFile[0],&fragFile[0]);
+Shader* Shader::load(std::string vertFile, std::string fragFile){
+	if (sLoadedShaders.count(vertFile+fragFile)>0){
+		gdt_log(LOG_NORMAL, TAG, "VertShader FragShader already loaded \"%s\" and \"%s\". Returning copy.", vertFile.c_str(),fragFile.c_str());
+		return sLoadedShaders[vertFile+fragFile];
+		//gdt_fatal(TAG, "Shader already loaded!: %s, %s", &vertFile[0],&fragFile[0]);
 	}
-	void * vertRawdata,*fragRawdata;
+
+	GdtResource vRes=GdtResource(vertFile),fRes=GdtResource(fragFile);
+
+	void *vertRawdata,*fragRawdata;
 	int vertLength,fragLength;
-	resource_t vertRes,fragRes;
 
-	vertRes=gdt_resource_load(&vertFile[0]);
-	vertLength = gdt_resource_length(vertRes);
-	vertRawdata = gdt_resource_bytes(vertRes);
+	vertLength = vRes.getLength();
+	vertRawdata = vRes.getBytes();
 
-	fragRes=gdt_resource_load(&fragFile[0]);
-	fragLength = gdt_resource_length(fragRes);
-	fragRawdata = gdt_resource_bytes(fragRes);
 
-	if (vertLength == 0 || fragLength == 0){
-		gdt_fatal(TAG, "Unable to load shaders!: %s, %s", &vertFile[0],&fragFile[0]);
+	fragLength = fRes.getLength();
+	fragRawdata = fRes.getBytes();
+
+	if (vertLength * fragLength == 0){
+		gdt_fatal(TAG, "Unable to load shaders!: %s, %s", vertFile.c_str(),fragFile.c_str());
 	}
 
 	char *vertText = (char *) malloc(vertLength+1);
@@ -80,14 +83,12 @@ const Shader Shader::load(std::string vertFile, std::string fragFile){
 		gdt_fatal(TAG, "Error linking program: %s", infoLog);
 	}
 	//gdt_log(LOG_NORMAL, TAG, "test: %s\n%s",&text.vertData[0],&text.fragData[0]);
-	loadedShaders[vertFile+fragFile]=Shader(program);
-	gdt_resource_unload(vertRes);
-	gdt_resource_unload(fragRes);
+	sLoadedShaders[vertFile+fragFile]=new Shader(program);
 
 	free(vertText);
 	free(fragText);
 
-	return Shader(program);
+	return sLoadedShaders[vertFile+fragFile];
 }
 
 GLuint Shader::compileShader(string_t shaderCode, GLenum type){
@@ -114,8 +115,10 @@ GLuint Shader::compileShader(string_t shaderCode, GLenum type){
 	return shader;
 }
 
-const Shader Shader::get(std::string vertFile,std::string fragFile){
-	return loadedShaders[vertFile+fragFile];
+Shader* Shader::get(std::string vertFile,std::string fragFile){
+	if (sLoadedShaders.count(vertFile+fragFile)==0)
+		gdt_fatal(TAG, "Getting shader that not is loaded! VertShader: %s , FragShader: %s", vertFile.c_str(),fragFile.c_str());
+	return sLoadedShaders[vertFile+fragFile];
 }
 
 Shader::Shader() : programID(-1) {}

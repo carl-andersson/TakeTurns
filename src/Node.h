@@ -40,7 +40,7 @@ private:
 	std::vector<Node*> mChildren;
 
 protected:
-	static Shader sShader;
+	static Shader *sShader;
 	//Shader mShader;
 	/*Node(Shader shader){
 		mShader=shader;

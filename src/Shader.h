@@ -30,18 +30,19 @@
 #include <map>
 
 #include <gdt/gdt_gles2.h>
+#include "GdtResource.h"
 
 class Shader{
 private:
 	static const string_t TAG;
 
 	GLint programID;
-	static std::map<std::string, Shader> loadedShaders;
+	static std::map<std::string, Shader*> sLoadedShaders;
 	static GLuint compileShader(string_t shaderCode, GLenum type);
 
 public:
-	static const Shader load(std::string vertFile, std::string fragFile);
-	static const Shader get(std::string vertFile, std::string fragFile);
+	static Shader *load(std::string vertFile, std::string fragFile);
+	static Shader *get(std::string vertFile, std::string fragFile);
 
 	Shader();
 	Shader(GLint id);
