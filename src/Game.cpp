@@ -113,12 +113,14 @@ void Game::visible(bool newSurface) {
 		mPlayground = new Sprite(mt);
 		mPlayground->mScaleY=2;
 		mPlayground->mScaleX=2;
+
 	}
 
 	glClearColor(0.4, 0.8, 0.4, 1);
 	mScreen = Screen(width,height);
 	glViewport(0, 0, width,height);
 }
+
 
 void Game::handleTouch(touch_type_t what, int screenX, int screenY) {
 	int32_t w = gdt_surface_width();
@@ -144,7 +146,10 @@ void Game::handleTouch(touch_type_t what, int screenX, int screenY) {
 }
 
 void Game::render(){
+	gdt_log(LOG_NORMAL, TAG, "DRAW!");
+
 	glClear(GL_COLOR_BUFFER_BIT);
+
 
 	mPlayground->draw();
 	mSprite->draw();

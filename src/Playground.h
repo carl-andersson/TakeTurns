@@ -30,6 +30,9 @@
 
 #include "Sprite.h"
 #include "Texture.h"
+#include <gdt/gdt_gles2.h>
+#include <math.h>
+
 
 typedef struct {
 	GLubyte red, green, blue, alpha;
@@ -66,6 +69,29 @@ public:
 		mTexture.useAs(GL_TEXTURE0);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (const GLvoid *) data);
 	}
+	void drawLine(float x1,float y1,float x2, float y2){
+		bool steep=abs(y2-y1)>abs(x2-x1);
+		if(steep){
+			float temp=x1;
+			x1=y1;
+			y1=temp;
+			temp=x2;
+			x2=y2;
+			y2=temp;
+		}
+		if (x1>x2){
+			float temp=x1;
+			x1=x2;
+			x2=temp;
+			temp=y2;
+			y2=y1;
+			y1=temp;
+		}
+
+
+
+	}
+
 };
 
 #endif //PLAYGROUND_H

@@ -35,12 +35,15 @@
 #include <gdt/gdt_gles2.h>
 #include <stdlib.h>
 #include <vector>
+#include <math.h>
+
 
 class Game {
 private:
 	static const char *TAG;
 
 	Screen mScreen;
+
 	Sprite *mSprite;
 	Sprite *mPlayground;
 
