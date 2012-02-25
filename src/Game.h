@@ -35,6 +35,7 @@
 #include <gdt/gdt_gles2.h>
 #include <stdlib.h>
 #include <vector>
+#include <math.h>
 #include "Playground.h"
 
 class Game {
@@ -43,6 +44,7 @@ private:
 	Screen mScreen;
 	Sprite *sprites;
 	Playground *playG;
+	float x,y,angle;
 
 	void loadAndPrintResource();
 

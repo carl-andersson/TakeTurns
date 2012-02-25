@@ -30,6 +30,9 @@ const char *Game::TAG = "Game";
 
 Game::Game() {
 	gdt_log(LOG_NORMAL, TAG, "Game instance created.");
+	x=50;
+	y=50;
+	angle=0;
 }
 
 void Game::loadAndPrintResource() {
@@ -92,6 +95,7 @@ void Game::visible(bool newSurface) {
 		sprites->mScaleX=1;
 		//sshaderInit();
 
+
 		glClearColor(0.4, 0.8, 0.4, 1);
 	}
 	glClearColor(0.4, 0.8, 0.4, 1);
@@ -101,15 +105,26 @@ void Game::visible(bool newSurface) {
 
 void Game::handleTouch(touch_type_t what, int screenX, int screenY){
 	gdt_log(LOG_NORMAL, TAG, "Touch!");
-	playG->setPixel(99-(int)(screenX/(float)mScreen.mWidth*100),99-(int)(screenY/(float)mScreen.mHeight*100),255,255,0);
+	//playG->setPixel(99-(int)(screenX/(float)mScreen.mWidth*100),99-(int)(screenY/(float)mScreen.mHeight*100),255,255,0);
+	if (screenX<100){
+		angle-=0.05;
+	}
+	if (screenX>mScreen.mWidth-100){
+		angle+=0.05;
+	}
 }
 
 void Game::render(){
+	gdt_log(LOG_NORMAL, TAG, "DRAW!");
+    x=x+sin(angle)*0.2;
+	y=y+cos(angle)*0.2;
+	playG->setPixel(x,y,0,255,0);
+	//playG->drawLine(x,y,x2,y2);
 	glClear(GL_COLOR_BUFFER_BIT);
 	playG->updateTexture();
 
 	playG->draw();
-	sprites->draw();
+	//sprites->draw();
 
 
 }
