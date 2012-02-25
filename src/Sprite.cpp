@@ -26,14 +26,14 @@
 
 #include "Sprite.h"
 
-const Vertex Sprite::vert[] = {
-		{-0.5,0.5,1,0},
-		{-0.5, -0.5,1,1},
-		{0.5, 0.5,0,0},
-		{0.5, -0.5,0,1}
+const Vertex Sprite::vertices[] = {
+		{-0.5,0.5,0,0},
+		{-0.5, -0.5,0,1},
+		{0.5, 0.5,1,0},
+		{0.5, -0.5,1,1}
 };
 
-const GLubyte Sprite::i[] = { 0, 1, 2, 3 };
+const GLubyte Sprite::indices[] = { 0, 1, 2, 3 };
 
 const string_t Sprite::TAG = "Sprite";
 
@@ -48,12 +48,12 @@ void Sprite::init(Shader shader) {
 	glGenBuffers(1, &Sprite::vertexBuf);
 	//gdt_log(LOG_NORMAL, TAG, "vertexBuf:%d",vertexBuf);
 	glBindBuffer(GL_ARRAY_BUFFER, Sprite::vertexBuf);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vert), vert, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	glGenBuffers(1, &Sprite::indexBuf);
 	//gdt_log(LOG_NORMAL, TAG, "indexBuf:%d",indexBuf);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Sprite::indexBuf);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(i), i, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(positionAttrib);
 	glEnableVertexAttribArray(textcoordsAttrib);

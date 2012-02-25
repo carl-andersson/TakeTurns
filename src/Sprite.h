@@ -45,9 +45,9 @@ private:
 
 	static GLuint vertexBuf;
 	static GLuint indexBuf;
-	static const Vertex vert[];
-	static const GLfloat v[];
-	static const GLubyte i[];
+	static const Vertex vertices[];
+	//static const GLfloat v[];
+	static const GLubyte indices[];
 
 protected:
 	Texture *mTexture;

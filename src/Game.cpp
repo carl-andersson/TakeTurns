@@ -126,7 +126,7 @@ void Game::handleTouch(touch_type_t what, int screenX, int screenY) {
 
 	//gdt_log(LOG_NORMAL, TAG, "(w,h) = (%d,%d) and (screenX,screenY) = (%d,%d)", w,h, screenX,screenY);
 
-	float x = 1 - (float) screenX / (float) w;
+	float x = (float) screenX / (float) w;
 	float y = 1 - (float) screenY / (float) h;
 
 	if(x < 0)
