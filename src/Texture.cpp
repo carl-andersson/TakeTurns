@@ -156,6 +156,7 @@ void Texture::useAs(GLuint textureUnit) {
 	glBindTexture(GL_TEXTURE_2D, mTextureID);
 }
 
+/*
 const Texture Texture::createTexture(std::string text,GLubyte *data,GLuint width,GLuint height){
 	if(loadedTextures[text].textureID!=-1){
 		gdt_fatal(TAG, "Texture already loaded!: %s", &text[0]);
@@ -164,3 +165,4 @@ const Texture Texture::createTexture(std::string text,GLubyte *data,GLuint width
 	loadedTextures[text]=id;
 	return Texture(id);
 }
+*/
