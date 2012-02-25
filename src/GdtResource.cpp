@@ -1,7 +1,7 @@
-
 /*
- * Widget.cpp
+ * GdtResource.cpp
  *
+ * Copyright (c) 2011 Sebastian Ärleryd
  * CopyRight (c) 2012 Carl Andersson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,27 +23,42 @@
  * THE SOFTWARE.
  */
 
-#include "Widget.h"
+#include "GdtResource.h"
 
+/*
 
-const string_t Widget::TAG="Widget";
+void*      gdt_resource_bytes (resource_t resource);
+int32_t    gdt_resource_length(resource_t resource);
+resource_t gdt_resource_load  (string_t   resourcePath);
+void       gdt_resource_unload(resource_t resource);
 
-Shader Widget::sShader;
+*/
 
+GdtResource::GdtResource(std::string path) {
+	mResource = gdt_resource_load(path.c_str());
+}
 
+GdtResource::~GdtResource() {
+	if(mResource == NULL)
+		return;
 
-void Widget::draw(){
+	gdt_resource_unload(mResource);
+}
 
-	sShader.setAttribute4f("translation",mX,mY,0,0);
-	sShader.setAttribute4f("vert_color",mColorRed,mColorGreen,mColorBlue,mColorAlpha);
-	sShader.setAttribute2f("scale",mScaleX,mScaleY);
+bool GdtResource::isValid() {
+	return mResource != NULL;
+}
 
-	selfDraw();
+int32_t GdtResource::getLength() {
+	if(mResource == NULL)
+		return -1;
 
-	for (int i=0;i<children.size();i++){
-		children[i]->draw();
-	}
+	return gdt_resource_length(mResource);
+}
 
-	sShader.setAttribute4f("translation",-mX,-mY,0,0);
+void * GdtResource::getBytes() {
+	if(mResource == NULL)
+		return NULL;
 
+	return gdt_resource_bytes(mResource);
 }

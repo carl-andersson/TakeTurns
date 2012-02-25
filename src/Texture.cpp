@@ -1,80 +1,162 @@
-
-
+/*
+ * Texture.cpp
+ *
+ * CopyRight (c) 2012 Carl Andersson
+ * CopyRight (c) 2012 Sebastian Ärleryd
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 
 #include "Texture.h"
 
+#include "GdtResource.h"
 
 const string_t Texture::TAG = "Texture";
 
-std::map<std::string,Texture> Texture::loadedTextures;
+std::map<std::string, Texture *> Texture::sLoadedTextures;
 
-GLuint Texture::texture[GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS];
+bool Texture::isPowerOfTwo(int number) {
+	if(number < 2)
+		return false;
 
-std::vector<GLuint> Texture::textureIDs;
+	int q = number;
+	int m;
 
-void Texture::init(){
+	while(true) {
+		q = q / 2;
+		m = q % 2;
 
-	gdt_log(LOG_NORMAL, TAG, "Max textures: %d",GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+		if(m != 0)
+			return false;
 
-	for(int i=GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS-1;i>=0;i--)
-		textureIDs.push_back(i);
-
-}
-
-const Texture Texture::loadPNG(std::string filename){
-
-	if(loadedTextures[filename].textureID!=-1){
-		gdt_fatal(TAG, "Texture already loaded!: %s", &filename[0]);
+		if(q <= 2)
+			return true;
 	}
-	std::vector<unsigned char> data;
-	GLubyte *rawdata;
-	unsigned long int width,height;
-	int length;
-
-	resource_t res=gdt_resource_load(&filename[0]);
-	length=gdt_resource_length(res);
-	if (length==0){
-		return Texture(-1);
-	}
-	rawdata =(GLubyte*) gdt_resource_bytes (res);
-
-	decodePNG(data,width,height,rawdata,length);
-
-	GLuint id=createTexture(&data[0],width,height);
-
-
-	loadedTextures[filename]=Texture(id);
-
-	gdt_resource_unload(res);
-
-	return loadedTextures[filename];
 }
 
-const Texture Texture::get(std::string filename){
-	return loadedTextures[filename];
-}
+GLuint Texture::createTexture(GLubyte *data, GLint format, GLuint width, GLuint height){
+	if(!isPowerOfTwo(width) || !isPowerOfTwo(height))
+		gdt_fatal(TAG, "Texture sizes has to be a power of 2.");
 
-GLuint Texture::createTexture(GLubyte *data,GLuint width,GLuint height){
-	GLuint textureID = textureIDs.back();
-	textureIDs.pop_back();
-	glGenTextures(1, &texture[textureID]);
-	glActiveTexture(GL_TEXTURE0+textureID);
-	glBindTexture(GL_TEXTURE_2D, texture[textureID]);
-	gdt_log(LOG_NORMAL, TAG, "selfDraw Texture: %d, texture pointer: %d",textureID,texture[textureID]);
+	GLuint newTextureID;
+	glGenTextures(1, &newTextureID);
+
+	gdt_log(LOG_NORMAL, TAG, "Got a new texture from OpenGL: %d", newTextureID);
+
+	// Bind the newly created texture so we set some parameters and
+	// upload bitmap data
+	glBindTexture(GL_TEXTURE_2D, newTextureID);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	glTexImage2D(
-		GL_TEXTURE_2D, 0,           /* target, level of detail */
-		GL_RGBA,                    /* internal format */
-		width,height, 0,           /* width, height, border */
-		GL_RGBA, GL_UNSIGNED_BYTE,   /* external format, type */
-		(void*)data                      /* pixels */
+			GL_TEXTURE_2D, 0,						// target, level of detail
+			format,										// internal format
+			width, height, 0,							// width, height, border
+			format, GL_UNSIGNED_BYTE,		// external format, type
+			(void *) data									// pixel data
 	);
-	return textureID;
+
+	GLenum error = glGetError();
+	if(error == GL_NO_ERROR)
+		gdt_log(LOG_NORMAL, TAG, "No errors from OpenGL when creating texture.");
+	else {
+		string_t error_string = gdt_gl_error_string(error);
+		gdt_fatal(TAG, "Got error from OpenGL when creating texture: %s.", error_string);
+		//glDeleteTextures(1, &newTextureID);
+		//return -1;
+	}
+
+	return newTextureID;
 }
 
+Texture * Texture::loadPNG(std::string filename){
+
+	if(sLoadedTextures.count(filename) > 0){
+		//gdt_fatal(TAG, "Texture already loaded: %s", filename.c_str());
+		gdt_log(LOG_NORMAL, TAG, "Texture already loaded \"%s\". Returning copy.", filename.c_str());
+		return sLoadedTextures[filename];
+	}
+
+	GdtResource res = GdtResource(filename);
+	if(!res.isValid())
+		return NULL;
+
+	std::vector<unsigned char> decodedData;
+	unsigned long width;
+	unsigned long height;
+	int decodeStatus = decodePNG(decodedData, width, height, (const unsigned char *) res.getBytes(), res.getLength());
+
+	gdt_log(LOG_NORMAL, TAG, "Decoded PNG with status %d and got data of size %d.", decodeStatus, decodedData.size());
+
+	GLuint newTextureID = createTexture(&decodedData[0], GL_RGBA, width, height);		// Using &data[0] is a bit unclean
+
+	Texture *tex = new Texture(newTextureID);
+	tex->mWidth = width;
+	tex->mHeight = height;
+	sLoadedTextures[filename] = tex;
+
+	return tex;
+}
+
+Texture * Texture::get(std::string filename){
+	return sLoadedTextures[filename];
+}
+
+/*
+const Texture Texture::createTexture(std::string text, GLubyte *data, GLuint width, GLuint height){
+	if(sLoadedTextures[text].mTextureID!=-1){
+		gdt_fatal(TAG, "Texture already loaded!: %s", &text[0]);
+	}
+	GLuint id = createTexture(data, width, height);
+	sLoadedTextures[text]=id;
+	return Texture(id);
+}
+ */
+
+Texture::Texture() : mTextureID(-1) {}
+
+/*
+Texture::Texture(GLubyte *data, GLuint width, GLuint height) {
+	mTextureID = createTexture(data, width, height);
+}
+ */
+
+GLuint Texture::getWidth() {
+	return mWidth;
+}
+
+GLuint Texture::getHeight() {
+	return mHeight;
+}
+
+bool Texture::isValid(){
+	return mTextureID != -1;
+}
+
+void Texture::useAs(GLuint textureUnit) {
+	glActiveTexture(textureUnit);
+	glBindTexture(GL_TEXTURE_2D, mTextureID);
+}
+
+/*
 const Texture Texture::createTexture(std::string text,GLubyte *data,GLuint width,GLuint height){
 	if(loadedTextures[text].textureID!=-1){
 		gdt_fatal(TAG, "Texture already loaded!: %s", &text[0]);
@@ -83,3 +165,4 @@ const Texture Texture::createTexture(std::string text,GLubyte *data,GLuint width
 	loadedTextures[text]=id;
 	return Texture(id);
 }
+*/

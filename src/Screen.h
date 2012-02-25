@@ -1,4 +1,3 @@
-
 /*
  * Screen.h
  *
@@ -23,36 +22,29 @@
  * THE SOFTWARE.
  */
 
-
 #ifndef SCREEN_H
 #define SCREEN_H
 
 #include <gdt/gdt_gles2.h>
 
 class Screen{
-private:
 
 public:
 	GLuint mWidth;
 	GLuint mHeight;
 	float  mRatio;
+
 	Screen(GLuint width, GLuint height){
-		mWidth=width;
-		mHeight=height;
-		mRatio=(float)width/(float)height;
+		mWidth = width;
+		mHeight = height;
+		mRatio = (float) width / (float) height;
 	}
 
 	Screen(){};
 
-	float getRatio(){
-
+	float getRatio() {
 		return mRatio;
 	}
-
 };
-
-
-
-
 
 #endif //SCREEN_H

@@ -1,5 +1,5 @@
 /*
- * start.cpp
+ * ModifiableTexture.h
  *
  * Copyright (c) 2011 Sebastian Ärleryd
  * CopyRight (c) 2012 Carl Andersson
@@ -23,49 +23,35 @@
  * THE SOFTWARE.
  */
 
-#include <gdt/gdt.h>
+#ifndef MODIFIABLETEXTURE_H
+#define MODIFIABLETEXTURE_H
 
-#include "Game.h"
-#include "Matrix4f.h"
+#include <gdt/gdt_gles2.h>
 
-Game *game;
+#include "Texture.h"
 
-void on_touch(touch_type_t what, int screenX, int screenY) {
-	game->handleTouch(what,screenX,screenY);
-}
+typedef struct {
+	GLubyte red, green, blue;
+} pixel;
 
-void gdt_hook_initialize() {
-	gdt_log(LOG_NORMAL, "start", "gdt_hook_initialize");
+class ModifiableTexture : public Texture {
+private:
+	static const string_t TAG;
 
-	gdt_set_callback_touch(&on_touch);
-	game = new Game();
-	game->init();
-}
+	pixel *mData;
+	Texture mTexture;
+	bool mDirty;
 
-void gdt_hook_visible(bool newSurface) {
-	gdt_log(LOG_NORMAL, "start", "gdt_hook_visible");
+public:
+	ModifiableTexture(int width, int height);
+	~ModifiableTexture();
 
-	game->visible(newSurface);
-}
+	void clear(GLubyte red, GLubyte green, GLubyte blue);
 
-void gdt_hook_active() {
-	gdt_log(LOG_NORMAL, "start", "gdt_hook_active");
-}
+	pixel getPixel(int x, int y);
+	void setPixel(int x, int y, GLubyte red, GLubyte green, GLubyte blue);
 
-void gdt_hook_inactive() {
-	gdt_log(LOG_NORMAL, "start", "gdt_hook_inactive");
-}
+	void useAs(GLuint textureUnit);
+};
 
-void gdt_hook_save_state() {
-	gdt_log(LOG_NORMAL, "start", "gdt_hook_save_state");
-}
-
-void gdt_hook_hidden() {
-	gdt_log(LOG_NORMAL, "start", "gdt_hook_hidden");
-}
-
-void gdt_hook_render() {
-	//gdt_log(LOG_NORMAL, "start", "gdt_hook_render");
-
-	game->render();
-}
+#endif //MODIFIABLETEXTURE_H

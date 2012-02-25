@@ -36,17 +36,19 @@
 #include <stdlib.h>
 #include <vector>
 #include <math.h>
-#include "Playground.h"
+
 
 class Game {
 private:
 	static const char *TAG;
+
 	Screen mScreen;
-	Sprite *sprites;
-	Playground *playG;
-	float x,y,angle;
+
+	Sprite *mSprite;
+	Sprite *mPlayground;
 
 	void loadAndPrintResource();
+	void loadAndPrintGdtResource();
 
 public:
 	Game();

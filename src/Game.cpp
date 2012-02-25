@@ -26,13 +26,13 @@
 
 #include "Game.h"
 
+#include "GdtResource.h"
+#include "ModifiableTexture.h"
+
 const char *Game::TAG = "Game";
 
 Game::Game() {
 	gdt_log(LOG_NORMAL, TAG, "Game instance created.");
-	x=50;
-	y=50;
-	angle=0;
 }
 
 void Game::loadAndPrintResource() {
@@ -64,68 +64,94 @@ void Game::loadAndPrintResource() {
 		gdt_log(LOG_NORMAL, TAG, "Resource length is: %d", len);
 }
 
+void Game::loadAndPrintGdtResource() {
+		string_t file = "/test.txt.jet";
+
+		GdtResource res = GdtResource(file);
+
+		int len = res.getLength();
+
+		gdt_log(LOG_NORMAL, TAG, "Resource length is: %d", len);
+
+		std::string bytes = std::string((string_t) res.getBytes(), len);
+
+		gdt_log(LOG_NORMAL, TAG, "byte per byte:");
+		for(int i = 0; i < bytes.size(); i++) {
+			gdt_log(LOG_NORMAL, TAG, "%c", bytes.at(i));
+		}
+		gdt_log(LOG_NORMAL, TAG, "end");
+
+		gdt_log(LOG_NORMAL, TAG, "Read \"%s\" from file \"%s\"", bytes.c_str(), file);
+}
+
 void Game::init() {
 	gdt_log(LOG_NORMAL, TAG, "Game initialized.");
+
+	loadAndPrintGdtResource();
 }
 
 void Game::visible(bool newSurface) {
 	gdt_log(LOG_NORMAL, TAG, "Game visible.");
-
-
 
 	int width = gdt_surface_width();
 	int height = gdt_surface_height();
 
 	gdt_log(LOG_NORMAL, TAG, "%sisible with screen size (%d, %d).",newSurface?"New v":"V", width, height);
 	if (newSurface){
-		loadAndPrintResource();
+		//Texture::init();
 
-		Texture::init();
-
-		Texture t=Texture::loadPNG("/pancake.png");
-		Shader s=Shader::load("/vert.jet","/frag.jet");
+		Texture *t1 = Texture::loadPNG("/scene.png");
+		Shader s = Shader::load("/vert.jet","/frag.jet");
 
 		//GLuint texture=Texture::get("/pancake.png").textureID;
 		Sprite::init(s);
-		sprites=new Sprite(t);
-		playG=new Playground("game",100,100);
-		playG->mScaleY=2;
-		playG->mScaleX=2;
-		sprites->mScaleY=1;
-		sprites->mScaleX=1;
-		//sshaderInit();
+		mSprite = new Sprite(t1);
+		mSprite->mScaleY=1;
+		mSprite->mScaleX=1;
 
+		ModifiableTexture *mt = new ModifiableTexture(64,128);
+		mPlayground = new Sprite(mt);
+		mPlayground->mScaleY=2;
+		mPlayground->mScaleX=2;
 
-		glClearColor(0.4, 0.8, 0.4, 1);
 	}
+
 	glClearColor(0.4, 0.8, 0.4, 1);
 	mScreen = Screen(width,height);
 	glViewport(0, 0, width,height);
 }
 
-void Game::handleTouch(touch_type_t what, int screenX, int screenY){
-	gdt_log(LOG_NORMAL, TAG, "Touch!");
-	//playG->setPixel(99-(int)(screenX/(float)mScreen.mWidth*100),99-(int)(screenY/(float)mScreen.mHeight*100),255,255,0);
-	if (screenX<100){
-		angle-=0.05;
-	}
-	if (screenX>mScreen.mWidth-100){
-		angle+=0.05;
-	}
+
+void Game::handleTouch(touch_type_t what, int screenX, int screenY) {
+	int32_t w = gdt_surface_width();
+	int32_t h = gdt_surface_height();
+
+	//gdt_log(LOG_NORMAL, TAG, "(w,h) = (%d,%d) and (screenX,screenY) = (%d,%d)", w,h, screenX,screenY);
+
+	float x = (float) screenX / (float) w;
+	float y = 1 - (float) screenY / (float) h;
+
+	if(x < 0)
+		x = 0;
+	else if(x > 1)
+		x = 1;
+
+	if(y < 0)
+		y = 0;
+	else if(y > 1)
+		y = 1;
+
+	ModifiableTexture *mt = (ModifiableTexture *) (mPlayground->getTexture());
+	mt->setPixel((int) ((mt->getWidth() - 1)*x), (int) ((mt->getHeight() - 1)*y), 255,255,0);
 }
 
 void Game::render(){
 	gdt_log(LOG_NORMAL, TAG, "DRAW!");
-    x=x+sin(angle)*0.2;
-	y=y+cos(angle)*0.2;
-	playG->setPixel(x,y,0,255,0);
-	//playG->drawLine(x,y,x2,y2);
+
 	glClear(GL_COLOR_BUFFER_BIT);
-	playG->updateTexture();
-
-	playG->draw();
-	//sprites->draw();
 
 
+	mPlayground->draw();
+	mSprite->draw();
 }
 

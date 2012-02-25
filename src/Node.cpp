@@ -1,8 +1,8 @@
 /*
- * start.cpp
+ * Node.cpp
  *
- * Copyright (c) 2011 Sebastian Ärleryd
  * CopyRight (c) 2012 Carl Andersson
+ * CopyRight (c) 2012 Sebastian Ärleryd
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,49 +23,38 @@
  * THE SOFTWARE.
  */
 
-#include <gdt/gdt.h>
+#include "Node.h"
 
-#include "Game.h"
-#include "Matrix4f.h"
+const string_t Node::TAG = "Node";
 
-Game *game;
+Shader Node::sShader;
 
-void on_touch(touch_type_t what, int screenX, int screenY) {
-	game->handleTouch(what,screenX,screenY);
+Node::Node() {
+	mChildren = std::vector<Node*>();
+	mX = 0;
+	mY = 0;
+	mScaleX = 1;
+	mScaleY = 1;
+	mColorGreen = 1;
+	mColorBlue = 1;
+	mColorRed = 1;
+	mColorAlpha = 1;
 }
 
-void gdt_hook_initialize() {
-	gdt_log(LOG_NORMAL, "start", "gdt_hook_initialize");
-
-	gdt_set_callback_touch(&on_touch);
-	game = new Game();
-	game->init();
+void Node::selfDraw() {
+	gdt_log(LOG_NORMAL, TAG, "selfDraw");
 }
 
-void gdt_hook_visible(bool newSurface) {
-	gdt_log(LOG_NORMAL, "start", "gdt_hook_visible");
+void Node::draw() {
+	sShader.setAttribute4f("translation",mX,mY,0,0);
+	sShader.setAttribute4f("vert_color",mColorRed,mColorGreen,mColorBlue,mColorAlpha);
+	sShader.setAttribute2f("scale",mScaleX,mScaleY);
 
-	game->visible(newSurface);
-}
+	selfDraw();
 
-void gdt_hook_active() {
-	gdt_log(LOG_NORMAL, "start", "gdt_hook_active");
-}
+	for (int i = 0; i < mChildren.size(); i++){
+		mChildren[i]->draw();
+	}
 
-void gdt_hook_inactive() {
-	gdt_log(LOG_NORMAL, "start", "gdt_hook_inactive");
-}
-
-void gdt_hook_save_state() {
-	gdt_log(LOG_NORMAL, "start", "gdt_hook_save_state");
-}
-
-void gdt_hook_hidden() {
-	gdt_log(LOG_NORMAL, "start", "gdt_hook_hidden");
-}
-
-void gdt_hook_render() {
-	//gdt_log(LOG_NORMAL, "start", "gdt_hook_render");
-
-	game->render();
+	sShader.setAttribute4f("translation",-mX,-mY,0,0);
 }

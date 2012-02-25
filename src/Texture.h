@@ -1,6 +1,27 @@
-
-
-
+/*
+ * Texture.h
+ *
+ * CopyRight (c) 2012 Carl Andersson
+ * CopyRight (c) 2012 Sebastian Ärleryd
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 
 #ifndef TEXTURE_H
 #define TEXTURE_H
@@ -11,44 +32,39 @@
 #include <map>
 #include "picopng.h"
 
-
 class Texture{
 private:
-
 	static const string_t TAG;
-	static std::map<std::string,Texture> loadedTextures;
-	static std::vector<GLuint> textureIDs;
-	static GLuint texture[];
-	Texture(GLint id){
-		textureID=id;
-	}
-	static GLuint createTexture(GLubyte *data,GLuint width,GLuint height);
-	GLint textureID;
+
+	static std::map<std::string, Texture *> sLoadedTextures;
+	//static std::vector<GLuint> textureIDs;
+	//static GLuint texture[];
+
+	Texture(GLint id) : mTextureID(id) {}
+
+protected:
+	GLint mTextureID;
+	GLuint mWidth;
+	GLuint mHeight;
+
+	static bool isPowerOfTwo(int number);
+
+	static GLuint createTexture(GLubyte *data, GLint format, GLuint width, GLuint height);
+
 public:
-	Texture(){
-		textureID=-1;
-	}
-	static void init();
+	//static void init();
+	//static const Texture createTexture(std::string text, GLubyte *data, GLuint width, GLuint height);
+	static Texture * loadPNG(std::string filename);
+	static Texture * get(std::string filename);
 
+	Texture();
+	//Texture(GLubyte *data, GLuint width, GLuint height);
 
+	GLuint getWidth();
+	GLuint getHeight();
 
-	GLint getID(){
-		return textureID;
-	}
-
-	bool isValid(){
-		if (textureID==-1)
-			return false;
-		else{
-			return true;
-		}
-	}
-	static const Texture createTexture(std::string text,GLubyte *data,GLuint width,GLuint height);
-	static const Texture loadPNG(std::string filename);
-	static const Texture get(std::string filename);
-
+	bool isValid();
+	virtual void useAs(GLuint textureUnit);
 };
-
-
 
 #endif //TEXTURE_H

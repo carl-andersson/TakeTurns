@@ -1,5 +1,5 @@
 /*
- * start.cpp
+ * GdtResource.h
  *
  * Copyright (c) 2011 Sebastian Ärleryd
  * CopyRight (c) 2012 Carl Andersson
@@ -23,49 +23,25 @@
  * THE SOFTWARE.
  */
 
+#ifndef GDTRESOURCE_H
+#define GDTRESOURCE_H
+
+#include <string>
+
 #include <gdt/gdt.h>
 
-#include "Game.h"
-#include "Matrix4f.h"
+class GdtResource {
+private:
+	resource_t mResource;
 
-Game *game;
+public:
+	GdtResource(std::string path);
+	~GdtResource();
 
-void on_touch(touch_type_t what, int screenX, int screenY) {
-	game->handleTouch(what,screenX,screenY);
-}
+	bool isValid();
 
-void gdt_hook_initialize() {
-	gdt_log(LOG_NORMAL, "start", "gdt_hook_initialize");
+	int32_t getLength();
+	void * getBytes();
+};
 
-	gdt_set_callback_touch(&on_touch);
-	game = new Game();
-	game->init();
-}
-
-void gdt_hook_visible(bool newSurface) {
-	gdt_log(LOG_NORMAL, "start", "gdt_hook_visible");
-
-	game->visible(newSurface);
-}
-
-void gdt_hook_active() {
-	gdt_log(LOG_NORMAL, "start", "gdt_hook_active");
-}
-
-void gdt_hook_inactive() {
-	gdt_log(LOG_NORMAL, "start", "gdt_hook_inactive");
-}
-
-void gdt_hook_save_state() {
-	gdt_log(LOG_NORMAL, "start", "gdt_hook_save_state");
-}
-
-void gdt_hook_hidden() {
-	gdt_log(LOG_NORMAL, "start", "gdt_hook_hidden");
-}
-
-void gdt_hook_render() {
-	//gdt_log(LOG_NORMAL, "start", "gdt_hook_render");
-
-	game->render();
-}
+#endif //GDTRESOURCE_H

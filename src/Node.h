@@ -1,7 +1,8 @@
 /*
- * Widget.h
+ * Node.h
  *
  * CopyRight (c) 2012 Carl Andersson
+ * CopyRight (c) 2012 Sebastian Ärleryd
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,25 +23,26 @@
  * THE SOFTWARE.
  */
 
-#ifndef WIDGET_H
-#define WIDGET_H
+#ifndef NODE_H
+#define NODE_H
 
 #include <vector>
 #include <string.h>
 #include <gdt/gdt.h>
+
 #include "Shader.h"
 
-class Widget{
+class Node {
 
 private:
-	std::vector<Widget*> children;
-
-
 	static const string_t TAG;
+
+	std::vector<Node*> mChildren;
+
 protected:
 	static Shader sShader;
 	//Shader mShader;
-	/*Widget(Shader shader){
+	/*Node(Shader shader){
 		mShader=shader;
 		mShader=sShader;
 		children=std::vector<Widget*>();
@@ -53,6 +55,7 @@ protected:
 		mColorRed=1;
 		mColorAlpha=1;
 	}*/
+
 public:
 	float mX;
 	float mY;
@@ -65,31 +68,10 @@ public:
 	float mScaleX;
 	float mScaleY;
 
-	Widget(){
-		//mShader=sShader;
-		children=std::vector<Widget*>();
-		mX=0;
-		mY=0;
-		mScaleX=1;
-		mScaleY=1;
-		mColorGreen=1;
-		mColorBlue=1;
-		mColorRed=1;
-		mColorAlpha=1;
-	}
+	Node();
 
-
-
-
-
-	virtual void draw();
-	virtual void selfDraw(){gdt_log(LOG_NORMAL, TAG, "selfDraw");};
-
-
-
+	void draw();
+	virtual void selfDraw();
 };
 
-
-
-
-#endif //WIDGET_H
+#endif //NODE_H

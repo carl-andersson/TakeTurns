@@ -2,6 +2,7 @@
  * Sprite.h
  *
  * CopyRight (c) 2012 Carl Andersson
+ * CopyRight (c) 2012 Sebastian Ärleryd
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +31,7 @@
 #include <gdt/gdt_gles2.h>
 #include <gdt/gdt.h>
 
-#include "Widget.h"
+#include "Node.h"
 #include "Texture.h"
 
 typedef struct {
@@ -38,34 +39,30 @@ typedef struct {
 	float tc[2];
 } Vertex;
 
+class Sprite : public Node {
+private:
+	static const string_t TAG;
 
-class Sprite:public Widget{
-protected:
 	static GLuint vertexBuf;
 	static GLuint indexBuf;
-	static const Vertex vert[];
-	static const GLfloat v[];
-	static const GLubyte i[];
-	static const string_t TAG;
-	Texture mTexture;
-	Sprite(){
+	static const Vertex vertices[];
+	//static const GLfloat v[];
+	static const GLubyte indices[];
 
-	}
+protected:
+	Texture *mTexture;
+	//Texture mTexture2;
+
 public:
-	Sprite(Texture texture){
-		mTexture=texture;
-	}
-	/*Sprite(Texture texture,Shader shader){
-		mTexture=texture;
-		mShader=shader;
-	}*/
-
-
 	static void init(Shader);
 
+	Sprite() {}
+	//Sprite(Texture texture1, Texture texture2) : mTexture(texture1), mTexture2(texture2) {}
+	Sprite(Texture *texture) : mTexture(texture) {};
+
+	Texture * getTexture();
+
 	void selfDraw();
-
-
 };
 
-#endif   //SPRITE_H
+#endif //SPRITE_H
