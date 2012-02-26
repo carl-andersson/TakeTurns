@@ -1,9 +1,9 @@
 /*
  * Sprite.cpp
  *
- * CopyRight (c) 2012 Carl Andersson
+ * Copyright (c) 2012 Carl Andersson
  * Copyright (c) 2011 Rickard Edström
- * CopyRight (c) 2012 Sebastian Ärleryd
+ * Copyright (c) 2012 Sebastian Ärleryd
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
