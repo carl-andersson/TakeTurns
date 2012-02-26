@@ -1,8 +1,8 @@
 /*
  * Texture.h
  *
- * CopyRight (c) 2012 Carl Andersson
- * CopyRight (c) 2012 Sebastian Ärleryd
+ * Copyright (c) 2012 Carl Andersson
+ * Copyright (c) 2012 Sebastian Ärleryd
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,17 +32,29 @@
 #include <map>
 #include "picopng.h"
 
+typedef struct {
+	GLuint textureID;
+	int32_t width;
+	int32_t height;
+} image;
+
 class Texture{
 private:
 	static const string_t TAG;
 
-	static std::map<std::string, Texture *> sLoadedTextures;
+	static std::map<std::string, Texture *> sNameTextureMap;
 	//static std::vector<GLuint> textureIDs;
 	//static GLuint texture[];
 
-	Texture(GLint id) : mTextureID(id) {}
+	Texture(GLint id) : mTextureID(id) {
+		sTextures.push_back(this);
+	}
+
+	static image loadFilePNG(std::string filename);
 
 protected:
+	static std::vector<Texture *> sTextures;
+
 	GLint mTextureID;
 	GLuint mWidth;
 	GLuint mHeight;
@@ -51,11 +63,14 @@ protected:
 
 	static GLuint createTexture(GLubyte *data, GLint format, GLuint width, GLuint height);
 
+	virtual void reloadTexture();
+
 public:
 	//static void init();
 	//static const Texture createTexture(std::string text, GLubyte *data, GLuint width, GLuint height);
 	static Texture * loadPNG(std::string filename);
 	static Texture * get(std::string filename);
+	static void reload();
 
 	Texture();
 	//Texture(GLubyte *data, GLuint width, GLuint height);

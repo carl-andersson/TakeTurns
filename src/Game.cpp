@@ -1,9 +1,8 @@
 /*
  * Game.cpp
  *
- * Copyright (c) 2011 Sebastian Ärleryd
- * CopyRight (c) 2012 Carl Andersson
- *
+ * Copyright (c) 2012 Carl Andersson
+ * Copyright (c) 2012 Sebastian Ärleryd
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,55 +32,57 @@ const char *Game::TAG = "Game";
 
 Game::Game() {
 	gdt_log(LOG_NORMAL, TAG, "Game instance created.");
+
+	mGameStartedOnce = false;
 }
 
 void Game::loadAndPrintResource() {
-		string_t file = "/test.txt.jet";
-		resource_t res = gdt_resource_load(file);
+	string_t file = "/test.txt.jet";
+	resource_t res = gdt_resource_load(file);
 
-		gdt_log(LOG_NORMAL, TAG, "Resource is: %d", res);
+	gdt_log(LOG_NORMAL, TAG, "Resource is: %d", res);
 
-		int len = gdt_resource_length(res);
+	int len = gdt_resource_length(res);
 
-		gdt_log(LOG_NORMAL, TAG, "Resource length is: %d", len);
+	gdt_log(LOG_NORMAL, TAG, "Resource length is: %d", len);
 
-		void *bytes = gdt_resource_bytes(res);
-		char *text = (char *) malloc(len+1);
-		memset(text, 0, len+1);
-		memcpy(text, bytes, len);
+	void *bytes = gdt_resource_bytes(res);
+	char *text = (char *) malloc(len+1);
+	memset(text, 0, len+1);
+	memcpy(text, bytes, len);
 
-		gdt_log(LOG_NORMAL, TAG, "byte per byte:");
-		for(int i = 0; i < len; i++) {
-			gdt_log(LOG_NORMAL, TAG, "%c", text[i]);
-		}
-		gdt_log(LOG_NORMAL, TAG, "end");
+	gdt_log(LOG_NORMAL, TAG, "byte per byte:");
+	for(int i = 0; i < len; i++) {
+		gdt_log(LOG_NORMAL, TAG, "%c", text[i]);
+	}
+	gdt_log(LOG_NORMAL, TAG, "end");
 
-		gdt_log(LOG_NORMAL, TAG, "Read \"%s\" from file \"%s\"", text, file);
+	gdt_log(LOG_NORMAL, TAG, "Read \"%s\" from file \"%s\"", text, file);
 
-		gdt_resource_unload(res);
+	gdt_resource_unload(res);
 
-		len = gdt_resource_length(res);
-		gdt_log(LOG_NORMAL, TAG, "Resource length is: %d", len);
+	len = gdt_resource_length(res);
+	gdt_log(LOG_NORMAL, TAG, "Resource length is: %d", len);
 }
 
 void Game::loadAndPrintGdtResource() {
-		string_t file = "/test.txt.jet";
+	string_t file = "/test.txt.jet";
 
-		GdtResource res = GdtResource(file);
+	GdtResource res = GdtResource(file);
 
-		int len = res.getLength();
+	int len = res.getLength();
 
-		gdt_log(LOG_NORMAL, TAG, "Resource length is: %d", len);
+	gdt_log(LOG_NORMAL, TAG, "Resource length is: %d", len);
 
-		std::string bytes = std::string((string_t) res.getBytes(), len);
+	std::string bytes = std::string((string_t) res.getBytes(), len);
 
-		gdt_log(LOG_NORMAL, TAG, "byte per byte:");
-		for(int i = 0; i < bytes.size(); i++) {
-			gdt_log(LOG_NORMAL, TAG, "%c", bytes.at(i));
-		}
-		gdt_log(LOG_NORMAL, TAG, "end");
+	gdt_log(LOG_NORMAL, TAG, "byte per byte:");
+	for(int i = 0; i < bytes.size(); i++) {
+		gdt_log(LOG_NORMAL, TAG, "%c", bytes.at(i));
+	}
+	gdt_log(LOG_NORMAL, TAG, "end");
 
-		gdt_log(LOG_NORMAL, TAG, "Read \"%s\" from file \"%s\"", bytes.c_str(), file);
+	gdt_log(LOG_NORMAL, TAG, "Read \"%s\" from file \"%s\"", bytes.c_str(), file);
 }
 
 void Game::init() {
@@ -97,29 +98,40 @@ void Game::visible(bool newSurface) {
 	int height = gdt_surface_height();
 
 	gdt_log(LOG_NORMAL, TAG, "%sisible with screen size (%d, %d).",newSurface?"New v":"V", width, height);
-	if (newSurface){
 
-		//Texture::init();
+	if (newSurface){
+		gdt_log(LOG_NORMAL, TAG, "BEFORE Shader::reload");
+		Shader::reload();
+		gdt_log(LOG_NORMAL, TAG, "AFTER Shader::reload");
+
+		gdt_log(LOG_NORMAL, TAG, "BEFORE Texture::reload");
+		Texture::reload();
+		gdt_log(LOG_NORMAL, TAG, "AFTER Texture::reload");
+
+		Shader *s = Shader::load("/vert.jet","/frag.jet");
+		Sprite::init(s);
+	}
+
+	if(!mGameStartedOnce) {
+		mScreen = Screen(width,height);
 
 		Texture *t1 = Texture::loadPNG("/scene.png");
-		Shader *s = Shader::load("/vert.jet","/frag.jet");
 
-		//GLuint texture=Texture::get("/pancake.png").textureID;
-		Sprite::init(s);
 		mSprite = new Sprite(t1);
 		mSprite->mScaleY=1;
 		mSprite->mScaleX=1;
 
-		ModifiableTexture *mt = new ModifiableTexture(64,128);
+		ModifiableTexture *mt = new ModifiableTexture("/face.png");
+		//ModifiableTexture *mt = new ModifiableTexture(64,128);
 		mPlayground = new Sprite(mt);
 		mPlayground->mScaleY=2;
 		mPlayground->mScaleX=2;
-
 	}
 
 	glClearColor(0.4, 0.8, 0.4, 1);
-	mScreen = Screen(width,height);
 	glViewport(0, 0, width,height);
+
+	mGameStartedOnce = true;
 }
 
 
@@ -143,16 +155,12 @@ void Game::handleTouch(touch_type_t what, int screenX, int screenY) {
 		y = 1;
 
 	ModifiableTexture *mt = (ModifiableTexture *) (mPlayground->getTexture());
-	mt->setPixel((int) ((mt->getWidth() - 1)*x), (int) ((mt->getHeight() - 1)*y), 255,255,0);
+	mt->setPixel((int) ((mt->getWidth() - 1)*x), (int) ((mt->getHeight() - 1)*y), 255,100,255);
 }
 
 void Game::render(){
-	gdt_log(LOG_NORMAL, TAG, "DRAW!");
-
 	glClear(GL_COLOR_BUFFER_BIT);
-
 
 	mPlayground->draw();
 	mSprite->draw();
 }
-

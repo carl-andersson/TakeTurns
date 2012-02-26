@@ -25,71 +25,11 @@
 
 #include "Shader.h"
 
+#include "GLUtils.h"
+
 const string_t Shader::TAG = "Shader";
 
 std::map<std::string, Shader*> Shader::sLoadedShaders;
-
-Shader* Shader::load(std::string vertFile, std::string fragFile){
-	if (sLoadedShaders.count(vertFile+fragFile)>0){
-		gdt_log(LOG_NORMAL, TAG, "VertShader FragShader already loaded \"%s\" and \"%s\". Returning copy.", vertFile.c_str(),fragFile.c_str());
-		return sLoadedShaders[vertFile+fragFile];
-		//gdt_fatal(TAG, "Shader already loaded!: %s, %s", &vertFile[0],&fragFile[0]);
-	}
-
-	GdtResource vRes=GdtResource(vertFile),fRes=GdtResource(fragFile);
-
-	void *vertRawdata,*fragRawdata;
-	int vertLength,fragLength;
-
-	vertLength = vRes.getLength();
-	vertRawdata = vRes.getBytes();
-
-
-	fragLength = fRes.getLength();
-	fragRawdata = fRes.getBytes();
-
-	if (vertLength * fragLength == 0){
-		gdt_fatal(TAG, "Unable to load shaders!: %s, %s", vertFile.c_str(),fragFile.c_str());
-	}
-
-	char *vertText = (char *) malloc(vertLength+1);
-	memset(vertText, 0, vertLength+1);
-	memcpy(vertText, vertRawdata, vertLength);
-
-	char *fragText = (char *) malloc(fragLength+1);
-	memset(fragText, 0, fragLength+1);
-	memcpy(fragText, fragRawdata, fragLength);
-
-	GLuint vertexShader = compileShader(vertText, GL_VERTEX_SHADER);
-	GLuint fragmentShader = compileShader(fragText, GL_FRAGMENT_SHADER);
-
-	GLuint program = glCreateProgram();
-
-	glAttachShader(program, vertexShader);
-	glAttachShader(program, fragmentShader);
-
-	glLinkProgram(program);
-
-	GLint result;
-	glGetProgramiv(program, GL_LINK_STATUS, &result);
-	if (result == GL_FALSE) {
-		//Get the length of the error log
-		GLint logLength;
-		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
-
-		//Get and print the error log and then exit with error
-		char *infoLog = (char *) malloc(logLength);
-		glGetProgramInfoLog(program, logLength, NULL, infoLog);
-		gdt_fatal(TAG, "Error linking program: %s", infoLog);
-	}
-	//gdt_log(LOG_NORMAL, TAG, "test: %s\n%s",&text.vertData[0],&text.fragData[0]);
-	sLoadedShaders[vertFile+fragFile]=new Shader(program);
-
-	free(vertText);
-	free(fragText);
-
-	return sLoadedShaders[vertFile+fragFile];
-}
 
 GLuint Shader::compileShader(string_t shaderCode, GLenum type){
 	GLuint shader = glCreateShader(type);
@@ -115,26 +55,120 @@ GLuint Shader::compileShader(string_t shaderCode, GLenum type){
 	return shader;
 }
 
+GLuint Shader::createProgram(std::string vertFile, std::string fragFile) {
+	GdtResource vRes = GdtResource(vertFile), fRes = GdtResource(fragFile);
+
+		void *vertRawdata,*fragRawdata;
+		int vertLength,fragLength;
+
+		vertLength = vRes.getLength();
+		vertRawdata = vRes.getBytes();
+
+
+		fragLength = fRes.getLength();
+		fragRawdata = fRes.getBytes();
+
+		if (vertLength * fragLength == 0){
+			gdt_fatal(TAG, "Unable to load shaders!: %s, %s", vertFile.c_str(),fragFile.c_str());
+		}
+
+		char *vertText = (char *) malloc(vertLength+1);
+		memset(vertText, 0, vertLength+1);
+		memcpy(vertText, vertRawdata, vertLength);
+
+		char *fragText = (char *) malloc(fragLength+1);
+		memset(fragText, 0, fragLength+1);
+		memcpy(fragText, fragRawdata, fragLength);
+
+		GLuint vertexShader = compileShader(vertText, GL_VERTEX_SHADER);
+		GLuint fragmentShader = compileShader(fragText, GL_FRAGMENT_SHADER);
+
+		GLErrorAssert(TAG, "Got error %s from OpenGL when compiling fragment shader %s and vertex shader %s.", fragFile.c_str(), vertFile.c_str());
+
+		GLuint program = glCreateProgram();
+
+		GLErrorAssert(TAG, "Got error %s from OpenGL when creating program for fragment shader %s and vertex shader %s.", fragFile.c_str(), vertFile.c_str());
+
+		glAttachShader(program, vertexShader);
+		glAttachShader(program, fragmentShader);
+
+		GLErrorAssert(TAG, "Got error %s from OpenGL when attaching fragment shader %s and vertex shader %s to program.", fragFile.c_str(), vertFile.c_str());
+
+		glLinkProgram(program);
+
+		GLErrorAssert(TAG, "Got error %s from OpenGL when linking fragment shader %s and vertex shader %s.", fragFile.c_str(), vertFile.c_str());
+
+		GLint result;
+		glGetProgramiv(program, GL_LINK_STATUS, &result);
+		if (result == GL_FALSE) {
+			//Get the length of the error log
+			GLint logLength;
+			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
+
+			//Get and print the error log and then exit with error
+			char *infoLog = (char *) malloc(logLength);
+			glGetProgramInfoLog(program, logLength, NULL, infoLog);
+			gdt_fatal(TAG, "Error linking program: %s", infoLog);
+		}
+
+		free(vertText);
+		free(fragText);
+
+		return program;
+}
+
+void Shader::reloadShader() {
+	mProgramID = createProgram(mVertexShaderPath, mFragmentShaderPath);
+}
+
+Shader * Shader::load(std::string vertFile, std::string fragFile){
+	if (sLoadedShaders.count(vertFile+fragFile)>0){
+		gdt_log(LOG_NORMAL, TAG, "VertShader FragShader already loaded \"%s\" and \"%s\". Returning copy.", vertFile.c_str(),fragFile.c_str());
+		return sLoadedShaders[vertFile+fragFile];
+		//gdt_fatal(TAG, "Shader already loaded!: %s, %s", &vertFile[0],&fragFile[0]);
+	}
+
+
+
+	GLuint program = createProgram(vertFile, fragFile);
+
+	//gdt_log(LOG_NORMAL, TAG, "test: %s\n%s",&text.vertData[0],&text.fragData[0]);
+
+	Shader *newShader = new Shader(program);
+	newShader->mVertexShaderPath = vertFile;
+	newShader->mFragmentShaderPath = fragFile;
+	sLoadedShaders[vertFile+fragFile] = newShader;
+
+	return sLoadedShaders[vertFile+fragFile];
+}
+
 Shader* Shader::get(std::string vertFile,std::string fragFile){
 	if (sLoadedShaders.count(vertFile+fragFile)==0)
 		gdt_fatal(TAG, "Getting shader that not is loaded! VertShader: %s , FragShader: %s", vertFile.c_str(),fragFile.c_str());
 	return sLoadedShaders[vertFile+fragFile];
 }
 
-Shader::Shader() : programID(-1) {}
+void Shader::reload() {
+	std::map<std::string, Shader*>::iterator it;
+	for(it = sLoadedShaders.begin(); it != sLoadedShaders.end(); it++) {
+		it->second->reloadShader();
+	}
+}
 
-Shader::Shader(GLint id) : programID(id) {}
+Shader::Shader() : mProgramID(-1) {}
+
+Shader::Shader(GLint id) : mProgramID(id) {}
 
 void Shader::use(){
-	glUseProgram(programID);
+	glUseProgram(mProgramID);
 }
 
 GLint Shader::getAttriLoc(string_t attri){
-	return glGetAttribLocation(programID, attri);
+	return glGetAttribLocation(mProgramID, attri);
 }
 
 bool Shader::setAttribute4f(string_t attri,float f1,float f2,float f3,float f4){
-	GLint attriLoc=glGetAttribLocation(programID, attri);
+	GLint attriLoc=glGetAttribLocation(mProgramID, attri);
 	if(attriLoc==-1){
 		return false;
 	}
@@ -143,7 +177,7 @@ bool Shader::setAttribute4f(string_t attri,float f1,float f2,float f3,float f4){
 }
 
 bool Shader::setAttribute3f(string_t attri,float f1,float f2,float f3){
-	GLint attriLoc=glGetAttribLocation(programID, attri);
+	GLint attriLoc=glGetAttribLocation(mProgramID, attri);
 	if(attriLoc==-1){
 		return false;
 	}
@@ -152,7 +186,7 @@ bool Shader::setAttribute3f(string_t attri,float f1,float f2,float f3){
 }
 
 bool Shader::setAttribute2f(string_t attri,float f1,float f2){
-	GLint attriLoc=glGetAttribLocation(programID, attri);
+	GLint attriLoc=glGetAttribLocation(mProgramID, attri);
 	if(attriLoc==-1){
 		return false;
 	}
@@ -161,7 +195,7 @@ bool Shader::setAttribute2f(string_t attri,float f1,float f2){
 }
 
 bool Shader::setAttribute1f(string_t attri,float f1){
-	GLint attriLoc=glGetAttribLocation(programID, attri);
+	GLint attriLoc=glGetAttribLocation(mProgramID, attri);
 	if(attriLoc==-1){
 		return false;
 	}
@@ -170,7 +204,7 @@ bool Shader::setAttribute1f(string_t attri,float f1){
 }
 
 bool Shader::setAttribute4f(string_t attri,float* f){
-	GLint attriLoc=glGetAttribLocation(programID, attri);
+	GLint attriLoc=glGetAttribLocation(mProgramID, attri);
 	if(attriLoc==-1){
 		return false;
 	}
@@ -179,7 +213,7 @@ bool Shader::setAttribute4f(string_t attri,float* f){
 }
 
 bool Shader::setAttribute3f(string_t attri,float* f){
-	GLint attriLoc=glGetAttribLocation(programID, attri);
+	GLint attriLoc=glGetAttribLocation(mProgramID, attri);
 	if(attriLoc==-1){
 		return false;
 	}
@@ -188,7 +222,7 @@ bool Shader::setAttribute3f(string_t attri,float* f){
 }
 
 bool Shader::setAttribute2f(string_t attri,float* f){
-	GLint attriLoc=glGetAttribLocation(programID, attri);
+	GLint attriLoc=glGetAttribLocation(mProgramID, attri);
 	if(attriLoc==-1){
 		return false;
 	}
@@ -197,7 +231,7 @@ bool Shader::setAttribute2f(string_t attri,float* f){
 }
 
 bool Shader::setAttribute1f(string_t attri,float* f){
-	GLint attriLoc=glGetAttribLocation(programID, attri);
+	GLint attriLoc=glGetAttribLocation(mProgramID, attri);
 	if(attriLoc==-1){
 		return false;
 	}
@@ -206,7 +240,7 @@ bool Shader::setAttribute1f(string_t attri,float* f){
 }
 
 bool Shader::setUniform4f(string_t unifo,float f1,float f2,float f3,float f4){
-	GLint unifoLoc=glGetUniformLocation(programID, unifo);
+	GLint unifoLoc=glGetUniformLocation(mProgramID, unifo);
 	if(unifoLoc==-1){
 		return false;
 	}
@@ -215,7 +249,7 @@ bool Shader::setUniform4f(string_t unifo,float f1,float f2,float f3,float f4){
 }
 
 bool Shader::setUniform3f(string_t unifo,float f1,float f2,float f3){
-	GLint unifoLoc=glGetUniformLocation(programID, unifo);
+	GLint unifoLoc=glGetUniformLocation(mProgramID, unifo);
 	if(unifoLoc==-1){
 		return false;
 	}
@@ -224,7 +258,7 @@ bool Shader::setUniform3f(string_t unifo,float f1,float f2,float f3){
 }
 
 bool Shader::setUniform2f(string_t unifo,float f1,float f2){
-	GLint unifoLoc=glGetUniformLocation(programID, unifo);
+	GLint unifoLoc=glGetUniformLocation(mProgramID, unifo);
 	if(unifoLoc==-1){
 		return false;
 	}
@@ -233,7 +267,7 @@ bool Shader::setUniform2f(string_t unifo,float f1,float f2){
 }
 
 bool Shader::setUniform1f(string_t unifo,float f1){
-	GLint unifoLoc=glGetUniformLocation(programID, unifo);
+	GLint unifoLoc=glGetUniformLocation(mProgramID, unifo);
 	if(unifoLoc==-1){
 		return false;
 	}
@@ -242,7 +276,7 @@ bool Shader::setUniform1f(string_t unifo,float f1){
 }
 
 bool Shader::setUniform4f(string_t unifo,float *f){
-	GLint unifoLoc=glGetUniformLocation(programID, unifo);
+	GLint unifoLoc=glGetUniformLocation(mProgramID, unifo);
 	if(unifoLoc==-1){
 		return false;
 	}
@@ -251,7 +285,7 @@ bool Shader::setUniform4f(string_t unifo,float *f){
 }
 
 bool Shader::setUniform3f(string_t unifo,float *f){
-	GLint unifoLoc=glGetUniformLocation(programID, unifo);
+	GLint unifoLoc=glGetUniformLocation(mProgramID, unifo);
 	if(unifoLoc==-1){
 		return false;
 	}
@@ -260,7 +294,7 @@ bool Shader::setUniform3f(string_t unifo,float *f){
 }
 
 bool Shader::setUniform2f(string_t unifo,float *f){
-	GLint unifoLoc=glGetUniformLocation(programID, unifo);
+	GLint unifoLoc=glGetUniformLocation(mProgramID, unifo);
 	if(unifoLoc==-1){
 		return false;
 	}
@@ -269,7 +303,7 @@ bool Shader::setUniform2f(string_t unifo,float *f){
 }
 
 bool Shader::setUniform1f(string_t unifo,float *f){
-	GLint unifoLoc=glGetUniformLocation(programID, unifo);
+	GLint unifoLoc=glGetUniformLocation(mProgramID, unifo);
 	if(unifoLoc==-1){
 		return false;
 	}
@@ -278,7 +312,7 @@ bool Shader::setUniform1f(string_t unifo,float *f){
 }
 
 bool Shader::setUniform1i(string_t unifo,int i){
-	GLint unifoLoc=glGetUniformLocation(programID, unifo);
+	GLint unifoLoc=glGetUniformLocation(mProgramID, unifo);
 	if(unifoLoc==-1){
 		return false;
 	}

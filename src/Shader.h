@@ -36,13 +36,22 @@ class Shader{
 private:
 	static const string_t TAG;
 
-	GLint programID;
+	GLint mProgramID;
+	std::string mVertexShaderPath;
+	std::string mFragmentShaderPath;
+
 	static std::map<std::string, Shader*> sLoadedShaders;
+
 	static GLuint compileShader(string_t shaderCode, GLenum type);
+	static GLuint createProgram(std::string vertFile, std::string fragFile);
+
+	void reloadShader();
 
 public:
-	static Shader *load(std::string vertFile, std::string fragFile);
-	static Shader *get(std::string vertFile, std::string fragFile);
+	static Shader * load(std::string vertFile, std::string fragFile);
+	static Shader * get(std::string vertFile, std::string fragFile);
+
+	static void reload();
 
 	Shader();
 	Shader(GLint id);

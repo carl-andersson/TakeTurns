@@ -39,6 +39,19 @@ string_t GLErrorString(GLenum error) {
 	case GL_OUT_OF_MEMORY:
 		return "GL_OUT_OF_MEMORY";
 	default:
-		return NULL;
+		return "<Unknown error code>";
 	}
+}
+
+void GLErrorAssert(string_t TAG, string_t format, ...) {
+	va_list args;
+	va_start(args, format);
+
+	GLenum error = glGetError();
+	if(error != GL_NO_ERROR) {
+		string_t error_string = GLErrorString(error);
+		gdt_fatal(TAG, format, error_string, args);
+	}
+
+	va_end(args);
 }

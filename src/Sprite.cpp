@@ -26,6 +26,8 @@
 
 #include "Sprite.h"
 
+#include "GLUtils.h"
+
 const Vertex Sprite::vertices[] = {
 		{-0.5,0.5,0,0},
 		{-0.5, -0.5,0,1},
@@ -45,10 +47,17 @@ void Sprite::init(Shader *shader) {
 	GLuint positionAttrib = shader->getAttriLoc("position");
 	GLuint textcoordsAttrib = shader->getAttriLoc("vert_textureCoords");
 
+	GLErrorAssert(TAG, "Got error %s from OpenGL when getting attribute positions from shader.");
+
 	glGenBuffers(1, &Sprite::vertexBuf);
+
+	GLErrorAssert(TAG, "Got error %s from OpenGL when generating buffers for sprite vertices.");
+
 	//gdt_log(LOG_NORMAL, TAG, "vertexBuf:%d",vertexBuf);
 	glBindBuffer(GL_ARRAY_BUFFER, Sprite::vertexBuf);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	GLErrorAssert(TAG, "Got error %s from OpenGL when binding vertex buffer and uploading buffer data.");
 
 	glGenBuffers(1, &Sprite::indexBuf);
 	//gdt_log(LOG_NORMAL, TAG, "indexBuf:%d",indexBuf);

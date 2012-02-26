@@ -1,8 +1,8 @@
 /*
  * ModifiableTexture.cpp
  *
- * Copyright (c) 2011 Sebastian Ärleryd
- * CopyRight (c) 2012 Carl Andersson
+ * Copyright (c) 2012 Carl Andersson
+ * Copyright (c) 2012 Sebastian Ärleryd
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,51 @@
 
 #include "ModifiableTexture.h"
 
+#include "GdtResource.h"
+
 const string_t ModifiableTexture::TAG = "ModifiableTexture";
+
+void ModifiableTexture::reloadTexture() {
+	uploadAndCreateTexture();
+}
+
+ModifiableTexture::ModifiableTexture(std::string filename) {
+	GdtResource res = GdtResource(filename);
+	if(!res.isValid()) {
+		mTextureID = -1;
+		return;
+	}
+
+	std::vector<unsigned char> decodedData;
+	unsigned long width;
+	unsigned long height;
+	int decodeStatus = decodePNG(decodedData, width, height, (const unsigned char *) res.getBytes(), res.getLength());
+
+	mWidth = width;
+	mHeight = height;
+
+	gdt_log(LOG_NORMAL, TAG, "Decoded PNG with status %d and got data of size %d.", decodeStatus, decodedData.size());
+
+	unsigned char *data = &decodedData[0];
+
+	gdt_log(LOG_NORMAL, TAG, "(1)");
+
+	mData = (pixel *) calloc(width*height, sizeof(pixel));
+
+	gdt_log(LOG_NORMAL, TAG, "(2)");
+
+	memcpy(mData, data, width*height*sizeof(pixel));
+
+	gdt_log(LOG_NORMAL, TAG, "(3)");
+
+	uploadAndCreateTexture();
+
+	gdt_log(LOG_NORMAL, TAG, "(4)");
+
+	sTextures.push_back(this);
+
+	gdt_log(LOG_NORMAL, TAG, "(5)");
+}
 
 ModifiableTexture::ModifiableTexture(int width, int height) {
 	if(!isPowerOfTwo(width) || !isPowerOfTwo(height))
@@ -38,16 +82,22 @@ ModifiableTexture::ModifiableTexture(int width, int height) {
 
 	mData = (pixel *) calloc(width*height, sizeof(pixel));
 
-	mTextureID = createTexture((GLubyte *) mData, GL_RGB, width, height);
-	if(mTextureID < 0) {
-		gdt_fatal(TAG, "Could not create %dx%d texture.", width, height);
-	}
+	uploadAndCreateTexture();
 
-	mDirty = false;
+	sTextures.push_back(this);
 }
 
 ModifiableTexture::~ModifiableTexture() {
 	free(mData);
+}
+
+void ModifiableTexture::uploadAndCreateTexture() {
+	mTextureID = createTexture((GLubyte *) mData, GL_RGBA, mWidth, mHeight);
+	if(mTextureID < 0) {
+		gdt_fatal(TAG, "Could not create %dx%d texture.", mWidth, mHeight);
+	}
+
+	mDirty = false;
 }
 
 void ModifiableTexture::clear(GLubyte red, GLubyte green, GLubyte blue) {
@@ -75,6 +125,8 @@ void ModifiableTexture::setPixel(int x, int y, GLubyte red, GLubyte green, GLuby
 	if(x < 0 || x >= mWidth || y < 0 || y >= mHeight)
 		gdt_fatal(TAG, "Target coordinates (%d,%d) for setPixel is outside of the texture.", x, y);
 
+	gdt_log(LOG_NORMAL, TAG, "ModifiableTexture %x setting pixel.", this);
+
 	pixel p;
 	p.red = red;
 	p.green = green;
@@ -89,7 +141,7 @@ void ModifiableTexture::useAs(GLuint textureUnit) {
 	Texture::useAs(textureUnit);
 
 	if(mDirty) {
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mWidth, mHeight, GL_RGB, GL_UNSIGNED_BYTE, (const GLvoid *) mData);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mWidth, mHeight, GL_RGBA, GL_UNSIGNED_BYTE, (const GLvoid *) mData);
 		mDirty = false;
 	}
 }

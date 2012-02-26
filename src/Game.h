@@ -42,6 +42,8 @@ class Game {
 private:
 	static const char *TAG;
 
+	bool mGameStartedOnce;
+
 	Screen mScreen;
 
 	Sprite *mSprite;

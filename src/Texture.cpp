@@ -1,8 +1,8 @@
 /*
  * Texture.cpp
  *
- * CopyRight (c) 2012 Carl Andersson
- * CopyRight (c) 2012 Sebastian Ärleryd
+ * Copyright (c) 2012 Carl Andersson
+ * Copyright (c) 2012 Sebastian Ärleryd
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,31 @@
 
 const string_t Texture::TAG = "Texture";
 
-std::map<std::string, Texture *> Texture::sLoadedTextures;
+std::vector<Texture *> Texture::sTextures;
+std::map<std::string, Texture *> Texture::sNameTextureMap;
+
+image Texture::loadFilePNG(std::string filename) {
+		GdtResource res = GdtResource(filename);
+		if(!res.isValid()) {
+			image img;
+			img.textureID = -1;
+			return img;
+		}
+
+		std::vector<unsigned char> decodedData;
+		unsigned long width;
+		unsigned long height;
+		int decodeStatus = decodePNG(decodedData, width, height, (const unsigned char *) res.getBytes(), res.getLength());
+
+		gdt_log(LOG_NORMAL, TAG, "Decoded PNG with status %d and got data of size %d.", decodeStatus, decodedData.size());
+
+		image img;
+		img.textureID = createTexture(&decodedData[0], GL_RGBA, width, height);		// Using &data[0] is a bit unclean
+		img.width = width;
+		img.height = height;
+
+		return img;
+}
 
 bool Texture::isPowerOfTwo(int number) {
 	if(number < 2)
@@ -55,8 +79,12 @@ GLuint Texture::createTexture(GLubyte *data, GLint format, GLuint width, GLuint 
 	if(!isPowerOfTwo(width) || !isPowerOfTwo(height))
 		gdt_fatal(TAG, "Texture sizes has to be a power of 2.");
 
+	GLErrorAssert(TAG, "Got error %s from OpenGL before doing anything before loading texture of future size %dx%d.", width, height);
+
 	GLuint newTextureID;
 	glGenTextures(1, &newTextureID);
+
+	GLErrorAssert(TAG, "Got error %s from OpenGL when generating texture pointer for future texture of size %dx%d.", width, height);
 
 	gdt_log(LOG_NORMAL, TAG, "Got a new texture from OpenGL: %d", newTextureID);
 
@@ -64,8 +92,12 @@ GLuint Texture::createTexture(GLubyte *data, GLint format, GLuint width, GLuint 
 	// upload bitmap data
 	glBindTexture(GL_TEXTURE_2D, newTextureID);
 
+	GLErrorAssert(TAG, "Got error %s from OpenGL when binding texture of future size %dx%d.", width, height);
+
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	GLErrorAssert(TAG, "Got error %s from OpenGL when setting texture parameters for texture future of size %dx%d.", width, height);
 
 	glTexImage2D(
 			GL_TEXTURE_2D, 0,						// target, level of detail
@@ -75,59 +107,60 @@ GLuint Texture::createTexture(GLubyte *data, GLint format, GLuint width, GLuint 
 			(void *) data									// pixel data
 	);
 
-	GLenum error = glGetError();
-	if(error == GL_NO_ERROR)
-		gdt_log(LOG_NORMAL, TAG, "No errors from OpenGL when creating texture.");
-	else {
-		string_t error_string = GLErrorString(error);
-		gdt_fatal(TAG, "Got error from OpenGL when creating texture: %s.", error_string);
-		//glDeleteTextures(1, &newTextureID);
-		//return -1;
-	}
+	GLErrorAssert(TAG, "Got error %s from OpenGL when creating texture of size %dx%d.", width, height);
 
 	return newTextureID;
 }
 
+void Texture::reloadTexture() {
+	// Try and find this object in sNameTextureMap, if so then load that filename.
+	std::map<std::string, Texture *>::iterator it;
+	for(it = sNameTextureMap.begin(); it != sNameTextureMap.end(); it++) {
+		if(it->second == this) {
+			image img = loadFilePNG(it->first);
+			mTextureID = img.textureID;
+			mWidth = img.width;
+			mHeight = img.height;
+			break;
+		}
+	}
+}
+
 Texture * Texture::loadPNG(std::string filename){
 
-	if(sLoadedTextures.count(filename) > 0){
+	if(sNameTextureMap.count(filename) > 0){
 		//gdt_fatal(TAG, "Texture already loaded: %s", filename.c_str());
 		gdt_log(LOG_NORMAL, TAG, "Texture already loaded \"%s\". Returning copy.", filename.c_str());
-		return sLoadedTextures[filename];
+		return sNameTextureMap[filename];
 	}
 
-	GdtResource res = GdtResource(filename);
-	if(!res.isValid())
-		return NULL;
+	image img = loadFilePNG(filename);
 
-	std::vector<unsigned char> decodedData;
-	unsigned long width;
-	unsigned long height;
-	int decodeStatus = decodePNG(decodedData, width, height, (const unsigned char *) res.getBytes(), res.getLength());
-
-	gdt_log(LOG_NORMAL, TAG, "Decoded PNG with status %d and got data of size %d.", decodeStatus, decodedData.size());
-
-	GLuint newTextureID = createTexture(&decodedData[0], GL_RGBA, width, height);		// Using &data[0] is a bit unclean
-
-	Texture *tex = new Texture(newTextureID);
-	tex->mWidth = width;
-	tex->mHeight = height;
-	sLoadedTextures[filename] = tex;
+	Texture *tex = new Texture(img.textureID);
+	tex->mWidth = img.width;
+	tex->mHeight = img.height;
+	sNameTextureMap[filename] = tex;
 
 	return tex;
 }
 
 Texture * Texture::get(std::string filename){
-	return sLoadedTextures[filename];
+	return sNameTextureMap[filename];
+}
+
+void Texture::reload() {
+	for(int i = 0; i < sTextures.size(); i++) {
+		sTextures[i]->reloadTexture();
+	}
 }
 
 /*
 const Texture Texture::createTexture(std::string text, GLubyte *data, GLuint width, GLuint height){
-	if(sLoadedTextures[text].mTextureID!=-1){
+	if(sNameTextureMap[text].mTextureID!=-1){
 		gdt_fatal(TAG, "Texture already loaded!: %s", &text[0]);
 	}
 	GLuint id = createTexture(data, width, height);
-	sLoadedTextures[text]=id;
+	sNameTextureMap[text]=id;
 	return Texture(id);
 }
  */
@@ -166,4 +199,4 @@ const Texture Texture::createTexture(std::string text,GLubyte *data,GLuint width
 	loadedTextures[text]=id;
 	return Texture(id);
 }
-*/
+ */

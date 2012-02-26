@@ -28,5 +28,6 @@
 #include <gdt/gdt_gles2.h>
 
 string_t GLErrorString(GLenum error);
+void GLErrorAssert(string_t TAG, string_t format, ...);
 
 #endif //GLUTILS_H

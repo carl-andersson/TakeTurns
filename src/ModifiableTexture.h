@@ -1,8 +1,8 @@
 /*
  * ModifiableTexture.h
  *
- * Copyright (c) 2011 Sebastian Ärleryd
- * CopyRight (c) 2012 Carl Andersson
+ * Copyright (c) 2012 Carl Andersson
+ * Copyright (c) 2012 Sebastian Ärleryd
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@
 #include "Texture.h"
 
 typedef struct {
-	GLubyte red, green, blue;
+	GLubyte red, green, blue, alpha;
 } pixel;
 
 class ModifiableTexture : public Texture {
@@ -42,9 +42,15 @@ private:
 	Texture mTexture;
 	bool mDirty;
 
+protected:
+	void reloadTexture();
+
 public:
+	ModifiableTexture(std::string filename);
 	ModifiableTexture(int width, int height);
 	~ModifiableTexture();
+
+	void uploadAndCreateTexture();
 
 	void clear(GLubyte red, GLubyte green, GLubyte blue);
 
