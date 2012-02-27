@@ -31,6 +31,7 @@
 #include <gdt/gdt_gles2.h>
 #include <gdt/gdt.h>
 
+
 #include "Node.h"
 #include "Texture.h"
 
@@ -53,12 +54,15 @@ protected:
 	Texture *mTexture;
 	//Texture mTexture2;
 
+
 public:
 	static void init(Shader*);
 
-	Sprite() {}
+	Sprite() {
+	}
 	//Sprite(Texture texture1, Texture texture2) : mTexture(texture1), mTexture2(texture2) {}
-	Sprite(Texture *texture) : mTexture(texture) {};
+	Sprite(Texture *texture) : mTexture(texture) {
+	};
 
 	Texture * getTexture();
 

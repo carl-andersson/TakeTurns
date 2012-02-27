@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include <vector>
 #include <math.h>
+#include <glm/glm.hpp>
 
 
 class Game {

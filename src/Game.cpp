@@ -44,6 +44,8 @@ void Game::loadAndPrintResource() {
 
 	int len = gdt_resource_length(res);
 
+
+
 	gdt_log(LOG_NORMAL, TAG, "Resource length is: %d", len);
 
 	void *bytes = gdt_resource_bytes(res);
@@ -96,6 +98,8 @@ void Game::visible(bool newSurface) {
 
 	int width = gdt_surface_width();
 	int height = gdt_surface_height();
+
+	//glm::vec4 v= glm::vec4(1.0f);
 
 	gdt_log(LOG_NORMAL, TAG, "%sisible with screen size (%d, %d).",newSurface?"New v":"V", width, height);
 
