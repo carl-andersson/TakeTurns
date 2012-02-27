@@ -31,6 +31,10 @@ Shader* Node::sShader;
 
 Node::Node() {
 	mChildren = std::vector<Node*>();
+	mModelMatrix = glm::mat4(1.0);
+	mModelMatrix[3]=glm::vec4(2.0,0.0,0.0,1.0);
+	for (int i=0;i<4;i++)
+		gdt_log(LOG_NORMAL, TAG, "Mat: %f %f %f %f",mModelMatrix[0][i],mModelMatrix[1][i],mModelMatrix[2][i],mModelMatrix[3][i]);
 	mX = 0;
 	mY = 0;
 	mScaleX = 1;
@@ -44,6 +48,11 @@ Node::Node() {
 void Node::selfDraw() {
 	gdt_log(LOG_NORMAL, TAG, "selfDraw");
 }
+
+void Node::move(float x,float y){
+	mModelMatrix[3]=glm::vec4(x,y,0,1);
+}
+
 
 void Node::draw() {
 	sShader->setAttribute4f("translation",mX,mY,0,0);

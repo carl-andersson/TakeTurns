@@ -29,6 +29,7 @@
 #include <vector>
 #include <string.h>
 #include <gdt/gdt.h>
+#include <glm/glm.hpp>
 
 #include "Shader.h"
 
@@ -40,6 +41,8 @@ private:
 	std::vector<Node*> mChildren;
 
 protected:
+	glm::mat4 mModelMatrix;
+
 	static Shader *sShader;
 	//Shader mShader;
 	/*Node(Shader shader){
@@ -69,6 +72,8 @@ public:
 	float mScaleY;
 
 	Node();
+
+	void move(float x,float y);
 
 	void draw();
 	virtual void selfDraw();
