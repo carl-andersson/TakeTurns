@@ -27,8 +27,11 @@
 #define NODE_H
 
 #include <vector>
+#include <algorithm>
 #include <string.h>
+
 #include <gdt/gdt.h>
+
 #include <glm/glm.hpp>
 #include "GLUtils.h"
 
@@ -36,45 +39,42 @@
 
 class Node {
 
+	friend class NodeSorter;
+
 private:
 	static const string_t TAG;
 
-	std::vector<Node*> mChildren;
+	std::vector<Node *> mChildren;
+	bool mChildrenSortDirty;
+
+	void removeChild(Node *child);
 
 protected:
 	glm::mat4 mModelMatrix;
 
 	static Shader *sShader;
-	//Shader mShader;
-	/*Node(Shader shader){
-		mShader=shader;
-		mShader=sShader;
-		children=std::vector<Widget*>();
-		mX=0;
-		mY=0;
-		mScaleX=1;
-		mScaleY=1;
-		mColorGreen=1;
-		mColorBlue=1;
-		mColorRed=1;
-		mColorAlpha=1;
-	}*/
+
+	Node *mParent;
+
+	int mLayer;
 
 public:
 	float mX;
 	float mY;
+
+	float mScaleX;
+	float mScaleY;
+
+	float mRotation;
 
 	float mColorGreen;
 	float mColorRed;
 	float mColorBlue;
 	float mColorAlpha;
 
-	float mScaleX;
-	float mScaleY;
-
-	float mAngle;
 
 	Node();
+	~Node();
 
 	void addChild(Node* n);
 
@@ -82,6 +82,15 @@ public:
 
 	void draw();
 	virtual void selfDraw();
+
+	void setLayer(int layer);
+	void setParent(Node *parent);
+};
+
+struct NodeSorter {
+	bool operator () (Node * const& a, Node * const& b) const {
+		return a->mLayer < b->mLayer;
+	}
 };
 
 #endif //NODE_H

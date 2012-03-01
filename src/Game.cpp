@@ -25,8 +25,7 @@
 
 #include "Game.h"
 
-#include "GdtResource.h"
-#include "ModifiableTexture.h"
+
 
 const char *Game::TAG = "Game";
 
@@ -130,7 +129,7 @@ void Game::visible(bool newSurface) {
 		mSprite->mScaleX=1;
 		mSprite->mX=0.5;
 		mSprite->mY=0.5;
-		mSprite->mAngle=60;
+		mSprite->mRotation=60;
 
 
 		anchorNode->addChild(mSprite);
