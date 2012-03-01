@@ -25,7 +25,7 @@
 
 #include "Shader.h"
 
-#include "GLUtils.h"
+
 
 const string_t Shader::TAG = "Shader";
 
@@ -165,6 +165,15 @@ void Shader::use(){
 
 GLint Shader::getAttriLoc(string_t attri){
 	return glGetAttribLocation(mProgramID, attri);
+}
+
+bool Shader::setUniformMat4f(string_t unifo,glm::mat4 mat){
+	GLint unifoLoc=glGetUniformLocation(mProgramID, unifo);
+	if (unifoLoc==-1){
+		return false;
+	}
+	glUniformMatrix4fv(unifoLoc,1,false,glm::value_ptr(mat));
+	return true;
 }
 
 bool Shader::setAttribute4f(string_t attri,float f1,float f2,float f3,float f4){

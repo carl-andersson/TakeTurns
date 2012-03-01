@@ -121,9 +121,20 @@ void Game::visible(bool newSurface) {
 
 		Texture *t1 = Texture::loadPNG("/scene.png");
 
+		anchorNode = new Node();
+
+
+
 		mSprite = new Sprite(t1);
-		mSprite->mScaleY=1;
+		mSprite->mScaleY=mScreen.getRatio();
 		mSprite->mScaleX=1;
+		mSprite->mX=0.5;
+		mSprite->mY=0.5;
+		mSprite->mAngle=60;
+
+
+		anchorNode->addChild(mSprite);
+		anchorNode->mX=-0.5;
 
 		ModifiableTexture *mt = new ModifiableTexture("/face.png");
 		//ModifiableTexture *mt = new ModifiableTexture(64,128);
@@ -165,6 +176,9 @@ void Game::handleTouch(touch_type_t what, int screenX, int screenY) {
 void Game::render(){
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	reset();
+
 	mPlayground->draw();
-	mSprite->draw();
+	//mSprite->draw();
+	anchorNode->draw();
 }

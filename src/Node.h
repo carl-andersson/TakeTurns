@@ -30,6 +30,7 @@
 #include <string.h>
 #include <gdt/gdt.h>
 #include <glm/glm.hpp>
+#include "GLUtils.h"
 
 #include "Shader.h"
 
@@ -71,7 +72,11 @@ public:
 	float mScaleX;
 	float mScaleY;
 
+	float mAngle;
+
 	Node();
+
+	void addChild(Node* n);
 
 	void move(float x,float y);
 

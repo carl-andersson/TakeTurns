@@ -27,8 +27,20 @@
 #define GLUTILS_H
 
 #include <gdt/gdt_gles2.h>
+#include <glm/glm.hpp>
+#include <stack>
+
 
 string_t GLErrorString(GLenum error);
 void GLErrorAssert(string_t TAG, string_t format, ...);
 
+void pushMatrix();
+void popMatrix();
+void scale(float sX,float sY);
+void rotate(float angle);
+void translate(float x,float y);
+glm::mat4 getCurrentMatrix();
+void reset();
+
 #endif //GLUTILS_H
+

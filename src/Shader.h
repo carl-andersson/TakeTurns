@@ -30,7 +30,10 @@
 #include <map>
 
 #include <gdt/gdt_gles2.h>
+#include <glm/glm.hpp>
+#include "GLUtils.h"
 #include "GdtResource.h"
+#include <glm/gtc/type_ptr.hpp>
 
 class Shader{
 private:
@@ -72,6 +75,7 @@ public:
 	bool setAttribute2f(string_t attri,float* f);
 	bool setAttribute1f(string_t attri,float* f);
 
+	bool setUniformMat4f(string_t unifo,glm::mat4 mat);
 
 	bool setUniform4f(string_t unifo,float f1,float f2,float f3,float f4);
 	bool setUniform3f(string_t unifo,float f1,float f2,float f3);

@@ -37,7 +37,7 @@
 #include <vector>
 #include <math.h>
 #include <glm/glm.hpp>
-
+#include "GLUtils.h"
 
 class Game {
 private:
@@ -46,7 +46,7 @@ private:
 	bool mGameStartedOnce;
 
 	Screen mScreen;
-
+	Node * anchorNode;
 	Sprite *mSprite;
 	Sprite *mPlayground;
 

@@ -31,22 +31,22 @@ Shader* Node::sShader;
 
 Node::Node() {
 	mChildren = std::vector<Node*>();
-	mModelMatrix = glm::mat4(1.0);
-	mModelMatrix[3]=glm::vec4(2.0,0.0,0.0,1.0);
-	for (int i=0;i<4;i++)
-		gdt_log(LOG_NORMAL, TAG, "Mat: %f %f %f %f",mModelMatrix[0][i],mModelMatrix[1][i],mModelMatrix[2][i],mModelMatrix[3][i]);
+	//for (int i=0;i<4;i++)
+	//	gdt_log(LOG_NORMAL, TAG, "Mat: %f %f %f %f",mModelMatrix[0][i],mModelMatrix[1][i],mModelMatrix[2][i],mModelMatrix[3][i]);
 	mX = 0;
 	mY = 0;
+	mAngle=0;
 	mScaleX = 1;
 	mScaleY = 1;
 	mColorGreen = 1;
 	mColorBlue = 1;
 	mColorRed = 1;
 	mColorAlpha = 1;
+
 }
 
 void Node::selfDraw() {
-	gdt_log(LOG_NORMAL, TAG, "selfDraw");
+	//gdt_log(LOG_NORMAL, TAG, "selfDraw");
 }
 
 void Node::move(float x,float y){
@@ -54,10 +54,29 @@ void Node::move(float x,float y){
 }
 
 
+void Node::addChild(Node* n){
+	mChildren.push_back(n);
+}
+
 void Node::draw() {
-	sShader->setAttribute4f("translation",mX,mY,0,0);
+
+	pushMatrix();
+
+	rotate(mAngle);
+	scale(mScaleX,mScaleY);
+	translate(mX,mY);
+
+
+	sShader->use();
+	//for (int i=0;i<4;i++)
+	//	gdt_log(LOG_NORMAL, TAG, "Mat: %f %f %f %f",getCurrentMatrix()[0][i],getCurrentMatrix()[1][i],getCurrentMatrix()[2][i],getCurrentMatrix()[3][i]);
+
+	if (!sShader->setUniformMat4f("modelViewMatrix",getCurrentMatrix())){
+		gdt_log(LOG_NORMAL, TAG, "ERROR");
+	}
+
 	sShader->setAttribute4f("vert_color",mColorRed,mColorGreen,mColorBlue,mColorAlpha);
-	sShader->setAttribute2f("scale",mScaleX,mScaleY);
+
 
 	selfDraw();
 
@@ -65,5 +84,7 @@ void Node::draw() {
 		mChildren[i]->draw();
 	}
 
-	sShader->setAttribute4f("translation",-mX,-mY,0,0);
+	popMatrix();
+
+
 }
