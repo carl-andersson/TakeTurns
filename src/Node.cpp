@@ -29,12 +29,25 @@ const string_t Node::TAG = "Node";
 
 Shader* Node::sShader;
 
+void Node::removeChild(Node *child) {
+	std::vector<Node *>::iterator it;
+	for(it = mChildren.begin(); it != mChildren.end(); it++) {
+		if( *it == child) {
+			mChildren.erase(it);
+			break;
+		}
+	}
+}
+
 Node::Node() {
 	mChildren = std::vector<Node*>();
+	mChildrenSortDirty = false;
+
 	mModelMatrix = glm::mat4(1.0);
 	mModelMatrix[3]=glm::vec4(2.0,0.0,0.0,1.0);
 	for (int i=0;i<4;i++)
 		gdt_log(LOG_NORMAL, TAG, "Mat: %f %f %f %f",mModelMatrix[0][i],mModelMatrix[1][i],mModelMatrix[2][i],mModelMatrix[3][i]);
+
 	mX = 0;
 	mY = 0;
 	mScaleX = 1;
@@ -43,6 +56,14 @@ Node::Node() {
 	mColorBlue = 1;
 	mColorRed = 1;
 	mColorAlpha = 1;
+}
+
+Node::~Node() {
+	setParent(NULL);
+
+	for(int i = 0; i < mChildren.size(); i++) {
+		mChildren[i]->setParent(NULL);
+	}
 }
 
 void Node::selfDraw() {
@@ -59,11 +80,39 @@ void Node::draw() {
 	sShader->setAttribute4f("vert_color",mColorRed,mColorGreen,mColorBlue,mColorAlpha);
 	sShader->setAttribute2f("scale",mScaleX,mScaleY);
 
-	selfDraw();
+	if(mChildrenSortDirty) {
+		sort(mChildren.begin(), mChildren.end(), NodeSorter());
+	}
 
-	for (int i = 0; i < mChildren.size(); i++){
+	// Draw the children in order according to their mLayer variable. Children with mLayer < 0 are drawn before this node.
+	int i;
+	for(i = 0; i < mChildren.size() && mChildren[i]->mLayer < 0; i++) {
 		mChildren[i]->draw();
 	}
 
-	sShader->setAttribute4f("translation",-mX,-mY,0,0);
+	selfDraw();
+
+	// Draw the rest of the children, those with mLayer >= 0 and that will appear above the this node.
+	for (; i < mChildren.size(); i++){
+		mChildren[i]->draw();
+	}
 }
+
+void Node::setLayer(int layer) {
+	if(layer != mLayer) {
+		mLayer = layer;
+		mParent->mChildrenSortDirty = true;
+	}
+}
+
+void Node::setParent(Node *parent) {
+	if(parent != mParent) {
+		mParent->removeChild(this);
+	}
+
+	mParent = parent;
+	if(parent != NULL)
+		//TODO: Add child?
+		mParent->mChildrenSortDirty = true;
+}
+

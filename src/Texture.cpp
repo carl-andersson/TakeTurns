@@ -79,6 +79,8 @@ GLuint Texture::createTexture(GLubyte *data, GLint format, GLuint width, GLuint 
 	if(!isPowerOfTwo(width) || !isPowerOfTwo(height))
 		gdt_fatal(TAG, "Texture sizes has to be a power of 2.");
 
+	//TODO: Also check against GL_MAX_TEXTURE_SIZE here.
+
 	GLErrorAssert(TAG, "Got error %s from OpenGL before doing anything before loading texture of future size %dx%d.", width, height);
 
 	GLuint newTextureID;

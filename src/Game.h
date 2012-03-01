@@ -23,20 +23,23 @@
  * THE SOFTWARE.
  */
 
-#ifndef Game_h
-#define Game_h
+#ifndef GAME_H
+#define GAME_H
+
+#include <string.h>
+#include <stdlib.h>
+#include <vector>
+#include <math.h>
 
 #include <gdt/gdt.h>
+#include <gdt/gdt_gles2.h>
+
+#include <glm/glm.hpp>
+
 #include "Screen.h"
 #include "Sprite.h"
 #include "Texture.h"
 #include "Shader.h"
-#include <string.h>
-#include <gdt/gdt_gles2.h>
-#include <stdlib.h>
-#include <vector>
-#include <math.h>
-#include <glm/glm.hpp>
 
 
 class Game {
@@ -64,4 +67,4 @@ public:
 	void render();
 };
 
-#endif //Game_h
+#endif //GAME_H
