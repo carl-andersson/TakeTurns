@@ -45,7 +45,7 @@
 class Game {
 private:
 	static const char *TAG;
-
+	double started;
 	bool mGameStartedOnce;
 
 	Screen mScreen;

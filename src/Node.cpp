@@ -84,9 +84,10 @@ void Node::draw() {
 
 	pushMatrix();
 
-	rotate(mRotation);
+
 	scale(mScaleX,mScaleY);
 	translate(mX,mY);
+	rotate(mRotation);
 
 
 	sShader->use();

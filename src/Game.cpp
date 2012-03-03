@@ -113,6 +113,7 @@ void Game::visible(bool newSurface) {
 
 		Shader *s = Shader::load("/vert.jet","/frag.jet");
 		Sprite::init(s);
+		started=gdt_time_ns()/1000000000.0;
 	}
 
 	if(!mGameStartedOnce) {
@@ -120,20 +121,22 @@ void Game::visible(bool newSurface) {
 
 		Texture *t1 = Texture::loadPNG("/scene.png");
 
-		anchorNode = new Node();
+
 
 
 
 		mSprite = new Sprite(t1);
-		mSprite->mScaleY=mScreen.getRatio();
-		mSprite->mScaleX=1;
-		mSprite->mX=0.5;
-		mSprite->mY=0.5;
-		mSprite->mRotation=60;
+		mSprite->mScaleY=1/3.0;
+		mSprite->mScaleX=1/3.0;
+		mSprite->mX=1;
+		mSprite->mY=0.0;
 
 
+		anchorNode = new Node();
 		anchorNode->addChild(mSprite);
 		anchorNode->mX=-0.5;
+		anchorNode->mScaleX=1.0/mScreen.getRatio();
+		anchorNode->mRotation=60;
 
 		ModifiableTexture *mt = new ModifiableTexture("/face.png");
 		//ModifiableTexture *mt = new ModifiableTexture(64,128);
@@ -176,8 +179,8 @@ void Game::render(){
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	reset();
-
+	mSprite->mRotation=(gdt_time_ns()/1000000000.0-started)*10;
 	mPlayground->draw();
-	//mSprite->draw();
+	mSprite->draw();
 	anchorNode->draw();
 }
